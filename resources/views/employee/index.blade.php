@@ -39,7 +39,9 @@
                     </div>
                 </form>
             </div>
-            <div class="container">
+            {{-- <div class="container">
+            </div>             --}}
+            <div class="p-3">
                 <table class="table table-hover table-bordered">
                     <tr class="bg-dark text-white">
                         <th class="scope">ID</th>
@@ -51,7 +53,7 @@
                         <th class="scope">Chức vụ</th>
                         <th class="scope text-center">Hành động</th>
                     </tr>
-                    <tr>
+                    <tr class="text-dark">
                         <td>1</td>
                         <td>none</td>
                         <td>Nguyễn Văn A</td>
@@ -65,7 +67,7 @@
                         </td>
                     </tr>
                 </table>
-            </div>            
+            </div>
         </div>
     </div>
     <!-- /.container-fluid -->
