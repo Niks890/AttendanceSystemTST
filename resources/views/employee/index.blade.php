@@ -14,33 +14,33 @@
         <!-- Page Heading -->
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">Thông tin Nhân viên</h1>
-            <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                    class="fas fa-download fa-sm text-white-50"></i> In</a>
         </div>
 
         <div class="card shadow">
             <div class="card-sub p-3">
                 <form method="GET" action="{{ route('employee.search') }}">
                     @csrf
-                    <div class="row g-2">
-                        <div class="col-md-10">
-                            <div class="input-group shadow-sm" style="position: relative;">
-                                <input name="query" type="text" class="form-control border-0" placeholder="Nhập tên nhân viên..." />
-                                <span class="input-group-text bg-primary text-white" style="position: absolute; top: 0; right: -3px;padding: 11px;z-index: 100;">
+                    <div class="row align-items-center">
+                        <div class="col-md-9">
+                            <div class="input-group shadow-sm rounded">
+                                <input name="query" type="text" class="form-control border-0 rounded-start" placeholder="Nhập tên nhân viên..." />
+                                <button class="btn btn-primary text-white rounded-end">
                                     <i class="fa fa-search"></i>
-                                </span>
+                                </button>
                             </div>
                         </div>
-                        <div class="col-md-2 text-end">
-                            <a href="{{ route('employee.create') }}" class="btn btn-success w-100">
+                        <div class="col-md-3 d-flex justify-content-around align-items-center">
+                            <a href="{{ route('employee.create') }}" class="btn btn-success me-2">
                                 <i class="fa fa-plus"></i> Thêm mới
+                            </a>
+                            <a href="#" class="btn btn-primary">
+                                <i class="fas fa-download fa-sm text-white-50"></i> In danh sách
                             </a>
                         </div>
                     </div>
+
                 </form>
             </div>
-            {{-- <div class="container">
-            </div>             --}}
             <div class="p-3">
                 <table class="table table-hover table-bordered">
                     <tr class="bg-dark text-white">

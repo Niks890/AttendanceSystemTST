@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AttendanceTimeController;
 use App\Http\Controllers\EmployeeController;
 use Illuminate\Support\Facades\Route;
 
