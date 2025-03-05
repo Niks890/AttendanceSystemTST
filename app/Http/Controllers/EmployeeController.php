@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Employee;
+use App\Models\Factory;
 use Illuminate\Http\Request;
 
 class EmployeeController extends Controller
@@ -20,7 +21,8 @@ class EmployeeController extends Controller
      */
     public function create()
     {
-        //
+        $factory = Factory::all(); 
+        return view('employee.create', compact('factory'));
     }
 
     /**
