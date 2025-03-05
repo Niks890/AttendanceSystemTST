@@ -22,7 +22,8 @@ Route::get('/logout', [AdminController::class, 'logout'])->name('logout');
 Route::group(['prefix' => '', 'middleware' => 'auth'], function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::resources([
-        'employee' => EmployeeController::class
+        'employee' => EmployeeController::class,
+        'attendance' => AttendanceTimeController::class
     ]);
 
     Route::get('/employee/search', [EmployeeController::class, 'search'])->name('employee.search');
