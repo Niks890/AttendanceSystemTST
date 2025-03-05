@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\EmployeeController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,6 +15,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/login', [AdminController::class, 'login'])->name('login');
+Route::post('/login', [AdminController::class, 'postLogin'])->name('post.login');
+Route::get('/logout', [AdminController::class, 'logout'])->name('logout');
+
+Route::group(['prefix' => '', 'middleware' => 'auth'], function () {
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::resources([
+        'employee' => EmployeeController::class
+    ]);
+
+    Route::get('/employee/search', [EmployeeController::class, 'search'])->name('employee.search');
 });
