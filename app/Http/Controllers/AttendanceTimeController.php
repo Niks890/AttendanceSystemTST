@@ -12,7 +12,30 @@ class AttendanceTimeController extends Controller
      */
     public function index()
     {
-        //
+        $attendances = collect([
+            (object)[
+                'attendance_date' => '06-03-2025',
+                'emp_id' => 'EMP001',
+                'employee' => (object)[
+                    'name' => 'Nguyễn Văn A',
+                    'schedules' => collect([(object)['time_in' => '08:00', 'time_out' => '17:00']])
+                ],
+                'attendance_time' => '08:00',
+                'status' => 1
+            ],
+            (object)[
+                'attendance_date' => '06-03-2025',
+                'emp_id' => 'EMP002',
+                'employee' => (object)[
+                    'name' => 'Trần Thị B',
+                    'schedules' => collect([(object)['time_in' => '08:00', 'time_out' => '17:00']])
+                ],
+                'attendance_time' => '08:30',
+                'status' => 0
+            ]
+        ]);
+
+        return view('attendancetime.index', compact('attendances'));
     }
 
     /**

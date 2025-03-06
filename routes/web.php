@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AttendanceProductController;
 use App\Http\Controllers\AttendanceTimeController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\ScheduleController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,8 +26,10 @@ Route::group(['prefix' => '', 'middleware' => 'auth'], function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::resources([
         'employee' => EmployeeController::class,
-        'attendance' => AttendanceTimeController::class
+        'attendance-time' => AttendanceTimeController::class,
+        'attendance-product' => AttendanceProductController::class
     ]);
-
+    Route::get('/schedule', [ScheduleController::class, 'index'])->name('schedule.index');
+    Route::get('/schedule/events', [ScheduleController::class, 'getEvents']);
     Route::get('/employee/search', [EmployeeController::class, 'search'])->name('employee.search');
 });

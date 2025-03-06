@@ -3,8 +3,12 @@
 
     <!-- Sidebar - Brand -->
     <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
-        <div class="sidebar-brand-text mx-3">SAMSUNG</div>
+        <div class="sidebar-brand-text mx-3 fw-bold text-uppercase text-primary"
+             style="letter-spacing: 3px; font-size: 1.4rem; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);">
+            SAMSUNG
+        </div>
     </a>
+
 
     <!-- Divider -->
     <hr class="sidebar-divider my-0">
@@ -24,11 +28,11 @@
         Chức năng chính
     </div>
 
-    <!-- Nav Item - Pages Collapse Menu -->
+    <!-- Quản lý Nhân viên -->
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
             aria-expanded="true" aria-controls="collapseTwo">
-            <i class="fas fa-fw fa-cog"></i>
+            <i class="fas fa-users text-white"></i>
             <span>Quản lý Nhân viên</span>
         </a>
         <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
@@ -39,20 +43,17 @@
         </div>
     </li>
 
-    <!-- Nav Item - Utilities Collapse Menu -->
+    <!-- Quản lý Chấm công -->
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
             aria-expanded="true" aria-controls="collapseUtilities">
-            <i class="fas fa-fw fa-wrench"></i>
-            <span>Utilities</span>
+            <i class="far fa-calendar text-white"></i>
+            <span>Quản lý Chấm công</span>
         </a>
         <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <h6 class="collapse-header">Custom Utilities:</h6>
-                <a class="collapse-item" href="utilities-color.html">Colors</a>
-                <a class="collapse-item" href="utilities-border.html">Borders</a>
-                <a class="collapse-item" href="utilities-animation.html">Animations</a>
-                <a class="collapse-item" href="utilities-other.html">Other</a>
+                <a class="collapse-item" href="{{route('attendance-time.index')}}">Chấm công theo thời gian</a>
+                <a class="collapse-item" href="{{route('attendance-product.index')}}">Chấm công theo sản phẩm</a>
             </div>
         </div>
     </li>
@@ -62,42 +63,17 @@
 
     <!-- Heading -->
     <div class="sidebar-heading">
-        Addons
+        Khác
     </div>
 
-    <!-- Nav Item - Pages Collapse Menu -->
-    <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
-            aria-expanded="true" aria-controls="collapsePages">
-            <i class="fas fa-fw fa-folder"></i>
-            <span>Pages</span>
-        </a>
-        <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
-            <div class="bg-white py-2 collapse-inner rounded">
-                <h6 class="collapse-header">Login Screens:</h6>
-                <a class="collapse-item" href="login.html">Login</a>
-                <a class="collapse-item" href="register.html">Register</a>
-                <a class="collapse-item" href="forgot-password.html">Forgot Password</a>
-                <div class="collapse-divider"></div>
-                <h6 class="collapse-header">Other Pages:</h6>
-                <a class="collapse-item" href="404.html">404 Page</a>
-                <a class="collapse-item" href="blank.html">Blank Page</a>
-            </div>
-        </div>
-    </li>
+    <!-- Lịch làm việc -->
 
-    <!-- Nav Item - Charts -->
-    <li class="nav-item">
-        <a class="nav-link" href="charts.html">
-            <i class="fas fa-fw fa-chart-area"></i>
-            <span>Charts</span></a>
-    </li>
 
     <!-- Nav Item - Tables -->
     <li class="nav-item">
-        <a class="nav-link" href="tables.html">
-            <i class="fas fa-fw fa-table"></i>
-            <span>Tables</span></a>
+        <a class="nav-link" href="{{route('schedule.index')}}">
+            <i class="fas fa-clipboard-list text-white"></i>
+            <span>Lịch làm việc</span></a>
     </li>
 
     <!-- Divider -->
