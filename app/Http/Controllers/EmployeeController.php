@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Department;
 use App\Models\Employee;
 use App\Models\Factory;
 use Illuminate\Http\Request;
@@ -13,7 +14,8 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        return view('employee.index');
+        $data = Employee::paginate(5);
+        return view('employee.index', compact('data'));
     }
 
     /**
@@ -21,8 +23,8 @@ class EmployeeController extends Controller
      */
     public function create()
     {
-        $factory = Factory::all(); 
-        return view('employee.create', compact('factory'));
+        $departments = Department::all(); 
+        return view('employee.create', compact('departments'));
     }
 
     /**
@@ -30,7 +32,51 @@ class EmployeeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // dd($request->all());
+        $data = $request->validate([
+            'name' => 'required',
+            'email' => 'required|unique:employees,email',
+            'address' => 'required',
+            'phone' => 'required',
+            'gender' => 'required',
+            'position' => 'required',
+            'department_id' => 'required',
+            'username' => 'required|unique:employees,username',
+            'password' => 'required',
+            'avatar' => 'required',
+        ], [
+            'name.required' => 'Vui lòng nhập tên',
+            'email.required' => 'Vui lòng nhập email',
+            'email.unique' => 'Email đã tồn tại',
+            'address.required' => 'Vui lòng nhập địa chỉ',
+            'phone.required' => 'Vui lòng nhập số điện thoại',
+            'gender.required' => 'Vui lòng chọn giới tính',
+            'position.required' => 'Vui lòng nhập vị trí',
+            'department_id.required' => 'Vui lòng chọn phòng ban',
+            'username.required' => 'Vui lòng nhập tên đăng nhập',
+            'username.unique' => 'Tên đăng nhập đã tồn tại',
+            'password.required' => 'Vui lòng nhập mật khẩu',
+            'avatar.required' => 'Vui lòng chọn ảnh đại diện',
+        ]);
+
+        $employee = new Employee();
+        $employee->name = $data['name'];
+        $employee->email = $data['email'];
+        $employee->address = $data['address'];
+        $employee->phone = $data['phone'];
+        $employee->gender = $data['gender'];
+        $employee->position = $data['position'];
+        $employee->department_id = $data['department_id'];
+        $employee->username = $data['username'];
+        $employee->password = bcrypt($data['password']);
+
+        $file_name = $request->avatar->hashName();
+        $request->avatar->move(public_path('uploads'), $file_name);
+        $employee->avatar = $file_name;
+
+        $employee->save();
+
+        return redirect()->route('employee.index')->with('success', 'Thêm nhân viên thành công');
     }
 
     /**

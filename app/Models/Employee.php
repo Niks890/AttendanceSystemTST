@@ -22,6 +22,11 @@ class Employee extends Model
         'department_id',
     ];
 
+    protected $hidden = [
+        'username',
+        'password',
+    ];
+
     public function department()
     {
         return $this->belongsTo(Department::class);
