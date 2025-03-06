@@ -33,7 +33,7 @@
                             <a href="{{ route('employee.create') }}" class="btn btn-success me-2">
                                 <i class="fa fa-plus"></i> Thêm mới
                             </a>
-                            <a href="#" class="btn btn-primary">
+                            <a href="{{ route('export.excel') }}" class="btn btn-primary">
                                 <i class="fas fa-download fa-sm text-white-50"></i> In danh sách
                             </a>
                         </div>
@@ -63,11 +63,11 @@
                             <td>{{$model->gender == 0 ? 'Nam' : 'Nữ'}}</td>
                             <td>{{$model->position}}</td>
                             <td class="text-center">
-                                <button type="button" class="btn btn-sm btn-secondary btn-edit">
+                                <button type="button" class="btn btn-sm btn-warning btn-edit">
                                     <i class="fa fa-pen"></i> Sửa
                                 </button>
-                                <button type="button" class="btn btn-sm btn-secondary btn-detail">
-                                    <i class="fa fa-pen"></i> Xem chi tiết
+                                <button type="button" class="btn btn-sm btn-primary btn-detail">
+                                    <i class="fa fa-eye"></i> Xem chi tiết
                                 </button>
                             </td>
                         </tr>
@@ -86,7 +86,7 @@
                 <div class="modal-header bg-secondary text-white">
                     <h5 class="modal-title" id="employeeDetailLabel">Thông tin nhân viên: <span
                             id="employee-info"></span></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">X</button>
+                    <button type="button" class="btn-close border-0 bg-secondary font-weight-bold text-white" data-bs-dismiss="modal" aria-label="Close">X</button>
                 </div>
 
                 <div class="modal-body">
@@ -142,7 +142,7 @@
                     </div>
                     <!-- Modal footer -->
                     <div class="modal-footer d-flex justify-content-center">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="button" class="btn btn-secondary btn-close" data-bs-dismiss="modal">Đóng</button>
                     </div>
                 </div>
 
@@ -154,7 +154,7 @@
 
 
     {{-- Modal Edit --}}
-    <div class="modal fade" id="employeeEdit" tabindex="-1" aria-labelledby="employeeEditLabel" aria-hidden="true">
+    {{-- <div class="modal fade" id="employeeEdit" tabindex="-1" aria-labelledby="employeeEditLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
 
@@ -213,9 +213,9 @@
                                     <div class="col-md-4">
                                         <label class="form-label">Nơi làm việc:</label>
                                         <select name="department_id" class="form-control">
-                                            {{-- @foreach ($departments as $item)
+                                            @foreach ($departments as $item)
                                                 <option value="{{ $item->id }}">{{ $item->name }}</option>
-                                            @endforeach --}}
+                                            @endforeach
                                         </select>
                                     </div>
                                 </div>
@@ -256,7 +256,7 @@
 
             </div>
         </div>
-    </div>
+    </div> --}}
 @endsection
 
 @section('css')
@@ -324,6 +324,11 @@
                     }
                 });
             });
+            $('.btn-close').click(function() {
+                $("#employeeDetail").modal("hide");
+            });
         });
     </script>
+
+
 @endsection

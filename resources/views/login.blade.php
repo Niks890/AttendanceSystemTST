@@ -14,7 +14,7 @@
             justify-content: center;
         }
         .login-card {
-            max-width: 400px;
+            max-width: 500px;
             width: 100%;
             background: white;
             padding: 2rem;
@@ -50,6 +50,7 @@
                 <a href="#" class="text-decoration-none">Quên mật khẩu?</a>
             </div>
             <input type="submit" class="btn btn-primary w-100 mt-3" value="Đăng nhập">
+            <a href="{{url('/')}}" class="d-flex justify-content-center align-items-center mt-2 text-center">Về trang chủ</a>
         </form>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
