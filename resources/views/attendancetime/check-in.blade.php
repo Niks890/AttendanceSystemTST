@@ -4,7 +4,7 @@
 
 @section('content')
     <h2>Lịch Điểm Danh</h2>
-    <h3 id="current-date"></h3>
+    <h3 class="text-dark" id="current-date"></h3>
     <div class="calendar" id="calendar"></div>
 
     <!-- Modal Xác Nhận -->
@@ -34,6 +34,20 @@
 @section('js')
     <script>
         let selectedCheckbox = null;
+
+        // Kiểm tra thời gian thực có thuộc ca làm việc không
+        function isWithinShiftTime(shift) {
+            let now = new Date();
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+
+            if (shift === "morning") {
+                return (hours > 7 || (hours === 7 && minutes >= 30)) && (hours < 12);
+            } else if (shift === "afternoon") {
+                return (hours > 13 || (hours === 13 && minutes >= 30)) && (hours < 17);
+            }
+            return false;
+        }
 
         function generateCalendar() {
             let today = new Date();
@@ -111,7 +125,14 @@
             let key = `attendance_${year}_${month}_${day}_${shift}`;
 
             if (checkbox.checked) {
-                // Nếu đang tick vào, hiển thị modal
+                // Kiểm tra xem có đang trong ca làm việc không
+                if (!isWithinShiftTime(shift)) {
+                    alert("Hiện không phải thời gian điểm danh của ca này!");
+                    checkbox.checked = false; // Hủy tick
+                    return;
+                }
+
+                // Nếu hợp lệ, hiển thị modal xác nhận
                 selectedCheckbox = checkbox;
                 $('#confirmModal').modal('show');
             } else {
