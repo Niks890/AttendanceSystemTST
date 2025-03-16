@@ -28,6 +28,7 @@
         Chức năng chính
     </div>
 
+    @can('managers')
     <!-- Quản lý Nhân viên -->
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
@@ -42,7 +43,9 @@
             </div>
         </div>
     </li>
+    @endcan
 
+    @can('employees')
     <!-- Quản lý Chấm công -->
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities1"
@@ -57,7 +60,9 @@
             </div>
         </div>
     </li>
+    @endcan
 
+    @can('employees')
     <!-- Quản lý Chấm công của Nhân viên -->
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities2"
@@ -72,6 +77,7 @@
             </div>
         </div>
     </li>
+    @endcan
 
     <!-- Divider -->
     <hr class="sidebar-divider">

@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Department;
 use App\Models\Employee;
-use App\Models\Factory;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class EmployeeController extends Controller
 {
@@ -23,7 +24,7 @@ class EmployeeController extends Controller
      */
     public function create()
     {
-        $departments = Department::all(); 
+        $departments = Department::all();
         return view('employee.create', compact('departments'));
     }
 
@@ -76,7 +77,24 @@ class EmployeeController extends Controller
 
         $employee->save();
 
-        return redirect()->route('employee.index')->with('success', 'Thêm nhân viên thành công');
+        $user = new User();
+        $user->name = $data['name'];
+        $user->email = $data['email'];
+        $user->password = bcrypt($data['password']);
+        if ($data['position'] === 'Nhân viên quản lý') {
+            $user->roles = 'manager,employee';
+        } else if ($data['position'] === 'Nhân viên xưởng') {
+            $user->roles = 'employee';
+        } else if ($data['position'] === 'Nhân viên sản xuất') {
+            $user->roles = 'employee';
+        } else {
+            $user->roles = '';
+        }
+        $user->remember_token = Str::random(10);
+        $user->email_verified_at = now();
+        $user->save();
+
+        return redirect()->route('employee.index')->with('success', 'Thêm nhân viên mới thành công');
     }
 
     /**
