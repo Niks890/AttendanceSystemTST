@@ -1,0 +1,31 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+.calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+    max-width: 700px;
+    margin: auto;
+}
+.day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 90px;
+}
+.checked {
+    background-color: lightgreen;
+}
+.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+.shift-label {
+    font-size: 12px;
+    font-weight: bold;
+}

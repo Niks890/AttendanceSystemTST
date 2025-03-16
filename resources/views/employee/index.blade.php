@@ -13,7 +13,7 @@
 
         <!-- Page Heading -->
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Thông tin Nhân viên</h1>
+            <h1 class="h3 mb-0 text-gray-800 m-auto">Thông tin Nhân viên</h1>
         </div>
 
         <div class="card shadow">
@@ -269,7 +269,7 @@
     @endif
 
 
-    
+
     <script>
         @if ($errors->any())
             $(document).ready(function() {
@@ -308,7 +308,7 @@
                             $("#employee-address").text(employeeInfo.address);
                             $("#employee-position").text(employeeInfo.position);
                             $("#employee-gender").text(parseInt(employeeInfo.gender) == 0 ? "Nam" : "Nữ");
-                            $("#department-name").text(employeeInfo.department.name);                         
+                            $("#department-name").text(employeeInfo.department.name);
                             $("#employee-created").text(new Date(employeeInfo.created_at)
                                 .toLocaleString(
                                     'vi-VN'));

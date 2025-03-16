@@ -18,8 +18,8 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-Route::get('/', function () { 
-    return view('welcome'); 
+Route::get('/', function () {
+    return view('welcome');
 });
 Route::get('/login', [AdminController::class, 'login'])->name('login');
 Route::post('/login', [AdminController::class, 'postLogin'])->name('post.login');
@@ -32,6 +32,7 @@ Route::group(['prefix' => '', 'middleware' => 'auth'], function () {
         'attendance-time' => AttendanceTimeController::class,
         'attendance-product' => AttendanceProductController::class
     ]);
+    Route::get('/attendance/check-in', [AttendanceTimeController::class, 'checkIn'])->name('attendance-time.check-in');
     Route::get('/schedule', [ScheduleController::class, 'index'])->name('schedule.index');
     Route::get('/schedule/events', [ScheduleController::class, 'getEvents']);
     Route::get('/employee/search', [EmployeeController::class, 'search'])->name('employee.search');

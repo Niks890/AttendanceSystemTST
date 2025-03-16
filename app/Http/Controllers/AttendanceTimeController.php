@@ -38,6 +38,10 @@ class AttendanceTimeController extends Controller
         return view('attendancetime.index', compact('attendances'));
     }
 
+    public function checkIn() {
+        return view('attendancetime.check-in');
+    }
+
     /**
      * Show the form for creating a new resource.
      */

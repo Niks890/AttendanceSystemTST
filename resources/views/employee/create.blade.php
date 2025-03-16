@@ -44,10 +44,11 @@
                         <select name="position" class="form-control" required>
                             <option value="Nhân viên xưởng">Nhân viên xưởng</option>
                             <option value="Nhân viên quản lý">Nhân viên quản lý</option>
+                            <option value="Nhân viên quản lý">Nhân viên sản xuất</option>
                         </select>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label">Nơi làm việc:</label>
+                        <label class="form-label">Phòng ban:</label>
                         <select name="department_id" class="form-control" required>
                             @foreach ($departments as $item)
                                 <option value="{{ $item->id }}">{{ $item->name }}</option>
@@ -72,11 +73,11 @@
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">Ảnh đại diện:</label>
                         <input type="file" name="avatar" class="form-control" accept="image/*" required id="avatar-input">
-                        @error('avatar') 
-                            <small class="text-danger">{{ $message }}</small> 
+                        @error('avatar')
+                            <small class="text-danger">{{ $message }}</small>
                         @enderror
                     </div>
-                
+
                     <!-- Ảnh xem trước -->
                     <div class="col-md-3 d-none preview-img-item">
                         <label class="form-label fw-semibold">Xem trước:</label>
@@ -85,7 +86,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="mt-4 text-center">
                     <input type="submit" class="btn btn-primary px-4" value="Thêm nhân viên">
                 </div>
