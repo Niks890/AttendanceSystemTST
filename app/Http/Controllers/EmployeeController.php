@@ -16,7 +16,8 @@ class EmployeeController extends Controller
     public function index()
     {
         $data = Employee::paginate(5);
-        return view('employee.index', compact('data'));
+        $departments = Department::all();
+        return view('employee.index', compact('data', 'departments'));
     }
 
     /**
@@ -118,7 +119,61 @@ class EmployeeController extends Controller
      */
     public function update(Request $request, Employee $employee)
     {
-        //
+        $data = $request->validate([
+            'name' => 'required',
+            'email' => 'required|unique:employees,email,' . $employee->id,
+            'address' => 'required',
+            'phone' => 'required',
+            'gender' => 'required',
+            'position' => 'required',
+            'department_id' => 'required',
+            'avatar' => 'nullable|image|mimes:jpg,png,jpeg,webp',
+        ], [
+            'name.required' => 'Vui lòng nhập tên',
+            'email.required' => 'Vui lòng nhập email',
+            'email.unique' => 'Email đã tồn tại',
+            'address.required' => 'Vui lòng nhập địa chỉ',
+            'phone.required' => 'Vui lòng nhập số điện thoại',
+            'gender.required' => 'Vui lòng chọn giới tính',
+            'position.required' => 'Vui lòng nhập vị trí',
+            'department_id.required' => 'Vui lòng chọn phòng ban',
+        ]);
+
+        // Cập nhật thông tin employee
+        $employee->name = $data['name'];
+        $employee->email = $data['email'];
+        $employee->address = $data['address'];
+        $employee->phone = $data['phone'];
+        $employee->gender = $data['gender'];
+        $employee->position = $data['position'];
+        $employee->department_id = $data['department_id'];
+
+        // Nếu có chọn avatar mới
+        if ($request->hasFile('avatar')) {
+            $file_name = $request->avatar->hashName();
+            $request->avatar->move(public_path('uploads'), $file_name);
+            $employee->avatar = $file_name;
+        }
+
+        $employee->save();
+
+        // Tìm user liên kết và cập nhật user
+        $user = User::where('email', $employee->email)->first();
+        if ($user) {
+            $user->name = $data['name'];
+            $user->email = $data['email'];
+            if ($request->filled('password')) {
+                $user->password = bcrypt($data['password']);
+            }
+            if ($data['position'] === 'Nhân viên quản lý') {
+                $user->roles = 'manager,employee';
+            } else {
+                $user->roles = 'employee';
+            }
+            $user->save();
+        }
+
+        return redirect()->route('employee.index')->with('success', 'Cập nhật nhân viên thành công');
     }
 
     /**
@@ -126,10 +181,15 @@ class EmployeeController extends Controller
      */
     public function destroy(Employee $employee)
     {
-        //
+        if ($employee->department_id == 0) {
+            $employee->delete();
+            return redirect()->route('employee.index')->with('success', 'Xóa nhân viên thành công');
+        } else {
+            return redirect()->route('employee.index')->with('error', 'Không thể xóa nhân viên');
+        }
     }
 
-    public function search(Request $request){
+    public function search(Request $request) {
 
     }
 }
