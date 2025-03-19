@@ -40,4 +40,10 @@ class ApiController extends Controller
 
         return response()->json($events);
     }
+
+    public function getEmployeeList(Request $request) {
+        $listId = explode(',', $request->listId);
+        $employees = Employee::whereIn('id', $listId)->get();
+        return $this->apiStatus($employees, 200, count($employees));
+    }
 }

@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AttendanceTime;
+use App\Models\Attendance;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AttendanceTimeController extends Controller
 {
@@ -38,7 +40,20 @@ class AttendanceTimeController extends Controller
         return view('attendancetime.index', compact('attendances'));
     }
 
-    public function checkIn() {
+    public function checkIn()
+    {
+        if (Auth::guard('web')->id() - 1 !== 0) {
+            $results = DB::table('attendances as a')
+                ->join('detail_schedules as ds', 'a.employee_id', '=', 'ds.employee_id')
+                ->join('schedules as s', 'ds.schedule_id', '=', 's.id')
+                ->join('employees as e', 'a.employee_id', '=', 'e.id')
+                ->select('e.id', 'e.name', 's.id as schedule_id', 's.time_in', 's.time_out', 'a.attendance_date', 'a.attendance_time', 'a.type')
+                ->where('e.id', Auth::guard('web')->id() - 1)
+                ->whereBetween('a.attendance_time', [DB::raw('s.time_in'), DB::raw('s.time_out')])
+                ->get();
+            $scheduleOfEmployee = collect($results);
+            return view('attendancetime.check-in', compact('scheduleOfEmployee'));
+        }
         return view('attendancetime.check-in');
     }
 
@@ -55,13 +70,20 @@ class AttendanceTimeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        Attendance::create([
+            'employee_id' => Auth::guard('web')->id() - 1,
+            'attendance_date' => $request->attendance_date,
+            'attendance_time' => $request->attendance_time,
+            'status' => false,
+            'type' => true
+        ]);
+        return response()->json(['success' => true]);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(AttendanceTime $attendanceTime)
+    public function show(Attendance $attendance)
     {
         //
     }
@@ -69,7 +91,7 @@ class AttendanceTimeController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(AttendanceTime $attendanceTime)
+    public function edit(Attendance $attendance)
     {
         //
     }
@@ -77,7 +99,7 @@ class AttendanceTimeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, AttendanceTime $attendanceTime)
+    public function update(Request $request, Attendance $attendance)
     {
         //
     }
@@ -85,7 +107,7 @@ class AttendanceTimeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(AttendanceTime $attendanceTime)
+    public function destroy(Attendance $attendance)
     {
         //
     }

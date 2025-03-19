@@ -1,7 +1,7 @@
 @can('managers')
     @extends('master')
 
-    @section('title', 'Thông tin Nhân viên')
+    @section('title', 'Thông tin ca làm việc')
 
 @section('content')
     @if (Session::has('success'))
@@ -20,7 +20,7 @@
 
         <!-- Page Heading -->
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800 m-auto">Thông tin Nhân viên</h1>
+            <h1 class="h3 mb-0 text-gray-800 m-auto">Thông tin các ca làm việc</h1>
         </div>
 
         <div class="card shadow">
@@ -38,7 +38,7 @@
                             </div>
                         </div>
                         <div class="col-md-3 d-flex justify-content-around align-items-center">
-                            <a href="{{ route('employee.create') }}" class="btn btn-success me-2">
+                            <a href="{{ route('schedule-shift.create') }}" class="btn btn-success me-2">
                                 <i class="fa fa-plus"></i> Thêm mới
                             </a>
                             <a href="{{ route('export.excel') }}" class="btn btn-primary">
@@ -53,24 +53,24 @@
                 <table class="table table-hover table-bordered">
                     <tr class="bg-dark text-white">
                         <th class="scope">ID</th>
-                        <th class="scope">Avatar</th>
-                        <th class="scope">Họ Tên</th>
-                        <th class="scope">Địa chỉ</th>
-                        <th class="scope">SĐT</th>
-                        <th class="scope">Giới tính</th>
-                        <th class="scope">Chức vụ</th>
+                        <th class="scope">Tên ca làm việc</th>
+                        <th class="scope">Nhân viên làm việc</th>
+                        <th class="scope">Time in</th>
+                        <th class="scope">Time out</th>
+                        <th class="scope">KPI</th>
                         <th class="scope text-center">Hành động</th>
                     </tr>
                     @foreach ($data as $model)
                         <tr class="text-dark">
                             <td>{{ $model->id }}</td>
-                            <td><img src="{{ asset('uploads/' . $model->avatar) }}" width="70px" height="70px"
-                                    alt=""></td>
-                            <td>{{ $model->name }}</td>
-                            <td>{{ $model->address }}</td>
-                            <td>{{ $model->phone }}</td>
-                            <td>{{ $model->gender == 0 ? 'Nam' : 'Nữ' }}</td>
-                            <td>{{ $model->position }}</td>
+                            <td>{{ $model->sche_name }}</td>
+                            <td class="text-center">
+                                <input type="hidden" name="emp_id" value="{{ $model->emp_id }}">
+                                <a href="javascript:void(0);" class="text-primary show-emp-list">Xem danh sách</a>
+                            </td>
+                            <td>{{ $model->time_in }}</td>
+                            <td>{{ $model->time_out }}</td>
+                            <td>{{ $model->KPI }}</td>
                             <td class="text-center">
                                 <button type="button" class="btn btn-sm btn-warning btn-edit"
                                     data-id="{{ $model->id }}">
@@ -126,7 +126,7 @@
     </div>
 
     {{-- Modal edit --}}
-    <div class="modal fade" id="employeeEdit" tabindex="-1" aria-labelledby="employeeEditLabel" aria-hidden="true">
+    {{-- <div class="modal fade" id="employeeEdit" tabindex="-1" aria-labelledby="employeeEditLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header bg-secondary text-white">
@@ -239,10 +239,10 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
 
     {{-- Modal Detail --}}
-    <div class="modal fade" id="employeeDetail" tabindex="-1" aria-labelledby="employeeDetailLabel"
+    {{-- <div class="modal fade" id="employeeDetail" tabindex="-1" aria-labelledby="employeeDetailLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -314,7 +314,7 @@
 
             </div>
         </div>
-    </div>
+    </div> --}}
 @endsection
 
 @section('css')
@@ -327,133 +327,16 @@
     @endif
 
     <script>
-        @if ($errors->any())
-            $(document).ready(function() {
-                $('#employeeDelete').addClass("open");
-            })
-        @endif
-    </script>
-
-    <script>
-        @if ($errors->any())
-            $(document).ready(function() {
-                $('#employeeDetail').addClass("open");
-            })
-        @endif
-    </script>
-
-    <script>
-        @if ($errors->any())
-            $(document).ready(function() {
-                $('#employeeEdit').addClass("open");
-            })
-        @endif
-    </script>
-
-    <script>
         $(document).ready(function() {
-            $(".btn-detail").click(function(event) {
-                event.preventDefault();
-                let row = $(this).closest("tr");
-                let epmloyeeId = row.find("td:first").text().trim();
-                $.ajax({
-                    url: `http://127.0.0.1:8000/api/employee/${epmloyeeId}`, //url, type, datatype, success,
-                    type: "GET",
-                    dataType: "json",
-                    success: function(response) {
-                        if (response.status_code === 200) {
-                            let employeeInfo = response.data;
-                            // console.log(employeeInfo);
-                            $("#employee-id").text(employeeInfo.id);
-                            $("#employee-avatar").attr("src", `uploads/${employeeInfo.avatar}`);
-                            $("#employee-name").text(employeeInfo.name);
-                            $("#employee-email").text(employeeInfo.email);
-                            $("#employee-phone").text(employeeInfo.phone);
-                            $("#employee-address").text(employeeInfo.address);
-                            $("#employee-position").text(employeeInfo.position);
-                            $("#employee-gender").text(parseInt(employeeInfo.gender) == 0 ?
-                                "Nam" : "Nữ");
-                            $("#department-name").text(employeeInfo.department.name);
-                            $("#employee-created").text(new Date(employeeInfo.created_at)
-                                .toLocaleString(
-                                    'vi-VN'));
-                            $("#employee-updated").text(new Date(employeeInfo.updated_at)
-                                .toLocaleString('vi-VN'));
-                            $("#employeeDetail").modal("show");
-                        } else {
-                            alert("Không thể lấy dữ liệu chi tiết!");
-                        }
-                    },
-                    error: function() {
-                        alert("Đã có lỗi xảy ra, vui lòng thử lại!");
-                    }
-                });
-            });
-            $('.btn-close').click(function() {
-                $("#employeeDetail").modal("hide");
+            $('.show-emp-list').click(function(e) {
+                e.preventDefault();
+                let empIds = $(this).closest('tr').find('input[name="emp_id"]').val();
+                let scheduleId = $(this).closest('tr').find('td').eq(0).text();
+                window.location.href = '/schedule-shift?ids=' + empIds + "&schedule_id=" + scheduleId;
             });
         });
     </script>
 
-    <script>
-        $(document).ready(function() {
-            $(".btn-delete").click(function(event) {
-                event.preventDefault();
-                let employeeId = $(this).data("id");
-                let employeeName = $(this).data("name");
-                let baseDeleteUrl = "{{ route('employee.destroy', ':id') }}";
-                $("#delete-form").attr("action", baseDeleteUrl.replace(':id', employeeId));
-                $("#employee-name-delete").text(employeeName);
-                $("#employeeDelete").modal("show");
-            });
-        });
-    </script>
-
-
-    <script>
-        $(document).ready(function() {
-            $(".btn-edit").click(function(event) {
-                event.preventDefault();
-                let employeeId = $(this).data("id");
-                let baseUpdateUrl = "{{ route('employee.update', ':id') }}";
-                $.ajax({
-                    url: `http://127.0.0.1:8000/api/employee/${employeeId}`, //url, type, datatype, success,
-                    type: "GET",
-                    dataType: "json",
-                    success: function(response) {
-                        if (response.status_code === 200) {
-                            let employeeInfo = response.data;
-                            // console.log(employeeInfo);
-                            $("#form-edit").attr("action", baseUpdateUrl.replace(':id',
-                                employeeInfo.id));
-                            $("#employee-edit-id").val(employeeInfo.id);
-                            $("#avatar-preview").attr("src", `uploads/${employeeInfo.avatar}`);
-                            $("#employee-edit-name").val(employeeInfo.name);
-                            $("#employee-edit-email").val(employeeInfo.email);
-                            $("#employee-edit-phone").val(employeeInfo.phone);
-                            $("#employee-edit-address").val(employeeInfo.address);
-                            $("#employee-edit-position").val(employeeInfo.position);
-                            $("#employee-edit-gender").val(employeeInfo.gender);
-                            $("#department-name").val(employeeInfo.department.name);
-                            $("#employeeEdit").modal("show");
-                        } else {
-                            alert("Không thể lấy dữ liệu chi tiết!");
-                        }
-                    },
-                    error: function() {
-                        alert("Đã có lỗi xảy ra, vui lòng thử lại!");
-                    }
-                });
-            });
-        });
-
-        document.querySelector('input[name="avatar"]').addEventListener('change', function(e) {
-            const [file] = e.target.files
-            if (file) {
-                document.querySelector('.img-preview').src = URL.createObjectURL(file)
-            }
-        })
-    </script>
 @endsection
 @else
 {{ abort(403, 'Bạn không có quyền truy cập trang này!') }}

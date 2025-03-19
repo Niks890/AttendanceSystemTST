@@ -190,6 +190,10 @@ class EmployeeController extends Controller
     }
 
     public function search(Request $request) {
+        $query = $request->input('query');
+        $data = Employee::where('name', 'like', '%' . $query . '%')->get();
+        $departments = Department::all();
 
+        return view('employee.index', compact('data', 'query', 'departments'));
     }
 }
