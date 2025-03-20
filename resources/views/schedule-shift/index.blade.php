@@ -95,7 +95,7 @@
     <!-- /.container-fluid -->
 
     <!-- Modal Xác nhận Xóa Nhân viên -->
-    <div class="modal fade" id="employeeDelete" tabindex="-1" aria-labelledby="employeeDeleteLabel" aria-hidden="true">
+    {{-- <div class="modal fade" id="employeeDelete" tabindex="-1" aria-labelledby="employeeDeleteLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
 
@@ -123,7 +123,7 @@
 
             </div>
         </div>
-    </div>
+    </div> --}}
 
     {{-- Modal edit --}}
     {{-- <div class="modal fade" id="employeeEdit" tabindex="-1" aria-labelledby="employeeEditLabel" aria-hidden="true">
@@ -315,6 +315,40 @@
             </div>
         </div>
     </div> --}}
+
+    <!-- Modal xem danh sách nhân viên -->
+    <div class="modal fade" id="employeeListModal" tabindex="-1" role="dialog" aria-labelledby="employeeListModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="employeeListModalLabel">Danh sách nhân viên</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Tên nhân viên</th>
+                                <th>Chức vụ</th>
+                                <th>Phòng ban</th>
+                            </tr>
+                        </thead>
+                        <tbody id="employeeList">
+                            <!-- Danh sách nhân viên -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 @endsection
 
 @section('css')
@@ -330,12 +364,55 @@
         $(document).ready(function() {
             $('.show-emp-list').click(function(e) {
                 e.preventDefault();
+
                 let empIds = $(this).closest('tr').find('input[name="emp_id"]').val();
                 let scheduleId = $(this).closest('tr').find('td').eq(0).text();
-                window.location.href = '/schedule-shift?ids=' + empIds + "&schedule_id=" + scheduleId;
+
+                // console.log("Danh sách ID: " + empIds);
+                // console.log("Schedule ID: " + scheduleId);
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/api/schedule-shift',
+                    data: {
+                        listId: empIds,
+                        schedule_id: scheduleId,
+                    },
+                    success: function(response) {
+                        if (response.data && response.data.length > 0) {
+                            let employeeList = '';
+                            response.data.forEach(function(employee, index) {
+                                employeeList += `
+                                <tr>
+                                    <td>${index + 1}</td>
+                                    <td>${employee.name}</td>
+                                    <td>${employee.position}</td>
+                                    <td>${employee.department_name}</td>
+                                </tr>`;
+                            });
+                            $('#employeeListModalLabel').html(
+                                'Danh sách nhân viên của Ca làm việc ' + scheduleId +
+                                '<br>Tổng nhân viên thuộc ca: ' + response.data.length
+                            );
+                            $('#employeeList').html(employeeList);
+                        } else {
+                            let employeeList = `
+                            <tr>
+                                <td colspan="4" class="text-center"><strong>Không có nhân viên nào!</strong></td>
+                            </tr>`;
+                            $('#employeeList').html(employeeList);
+                        }
+                        $('#employeeListModal').modal('show');
+                    },
+                    error: function(xhr) {
+                        console.error(xhr);
+                        alert('Lỗi: ' + xhr.responseText);
+                    }
+                });
             });
         });
     </script>
+
 
 @endsection
 @else

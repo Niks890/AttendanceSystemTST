@@ -22,4 +22,6 @@ use Spatie\FlareClient\Api;
 Route::get('/schedule/events', [ApiController::class, 'getEvents']);
 Route::get('/employee/{id}', [ApiController::class, 'employee'])->name('api.employee');
 
-Route::get('/schedule-shift', [ApiController::class, 'getEmployeeList'])->name('api.getEmployeeList');
+// Route::get('/schedule-shift', [ApiController::class, 'getEmployeeList'])->name('api.getEmployeeList');
+Route::post('/schedule-shift', [ApiController::class, 'getEmployeeList']);
+
