@@ -14,8 +14,8 @@
         <div class="mt-5">
             <p class="text-dark font-weight-bold">Nếu không có máy quét, hãy thử:</p>
             <h4>Nạp dữ liệu từ file JSON</h4>
-            <form class="d-flex align-items-center justify-content-center" action="{{ route('scanner-attendance.upload-json') }}" method="POST"
-                enctype="multipart/form-data">
+            <form class="d-flex align-items-center justify-content-center"
+                action="{{ route('scanner-attendance.upload-json') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="form-group">
                     <input type="file" name="json_file" class="form-control-file" required>
@@ -44,7 +44,9 @@
                     <div class="modal-body">
                         <div class="form-group">
                             <label for="scannerIp">Địa chỉ IP</label>
-                            <input type="text" name="ip" class="form-control" id="scannerIp" required>
+                            <input type="text" name="ip" class="form-control" id="scannerIp" required
+                                pattern="^((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.|$)){4}$" placeholder="Ví dụ: 192.168.1.201">
+                            <small class="form-text text-muted">Nhập đúng định dạng IPv4 (VD: 192.168.1.201)</small>
                         </div>
                         <div class="form-group">
                             <label for="scannerPort">Port</label>
@@ -58,7 +60,6 @@
                     </div>
                 </div>
             </form>
-
         </div>
     </div>
 @endsection
@@ -80,4 +81,15 @@
             $('#scannerModal').modal('show');
         });
     </script>
+    <script>
+        document.getElementById('scannerForm').addEventListener('submit', function(e) {
+            const ip = document.getElementById('scannerIp').value;
+            const regex = /^((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.){3}(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)$/;
+            if (!regex.test(ip)) {
+                e.preventDefault();
+                alert('Vui lòng nhập đúng định dạng IPv4!');
+            }
+        });
+    </script>
+
 @endsection
