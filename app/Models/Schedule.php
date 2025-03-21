@@ -21,10 +21,6 @@ class Schedule extends Model
         return $this->hasMany(DetailSchedule::class);
     }
 
-    public function attendanceTimes() {
-        return $this->hasMany(AttendanceTime::class);
-    }
-
     public function attendanceProducts() {
         return $this->hasMany(AttendanceProduct::class);
     }

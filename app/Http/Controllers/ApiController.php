@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Employee;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ApiController extends Controller
 {
@@ -40,4 +41,25 @@ class ApiController extends Controller
 
         return response()->json($events);
     }
+
+
+    public function getEmployeeList(Request $request) {
+        $scheduleId = $request->schedule_id;
+        $listId = $request->listId ? explode(',', $request->listId) : [];
+    
+        if (empty($scheduleId) || empty($listId)) {
+            return $this->apiStatus([], 400, 0, "Lịch làm việc hoặc danh sách ID trống");
+        }
+        $employees = DB::table('employees')
+        ->join('detail_schedules', 'employees.id', '=', 'detail_schedules.employee_id')
+        ->join('schedules', 'detail_schedules.schedule_id', '=', 'schedules.id')
+        ->join('departments', 'employees.department_id', '=', 'departments.id')
+        ->where('schedules.id', $scheduleId)
+        ->whereIn('employees.id', $listId)
+        ->select('employees.*', 'departments.name as department_name')
+        ->get();
+        return $this->apiStatus($employees, 200, count($employees));
+    }
+    
+    
 }

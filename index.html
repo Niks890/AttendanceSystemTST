@@ -1,12 +1,112 @@
-{{-- @php
-    dd($scheduleOfEmployee);
-@endphp --}}
+<!DOCTYPE html>
+<html lang="en">
 
-@extends('master')
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <style>
+        body {
+            font-family: "Poppins", sans-serif;
+            text-align: center;
+            background-color: #1e1e2f;
+            color: #ffffff;
+        }
 
-@section('title', 'Điểm danh')
+        h2 {
+            color: #4a90e2;
+            font-weight: bold;
+        }
 
-@section('content')
+        h3 {
+            color: #aab2bf;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            max-width: 750px;
+            margin: auto;
+        }
+
+        .day {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px;
+            border-radius: 8px;
+            width: 95px;
+            transition: transform 0.2s;
+            background: #252537;
+            box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3);
+            color: #aab2bf;
+        }
+
+        .day:hover {
+            transform: scale(1.05);
+            background: #30304a;
+        }
+
+        .checked {
+            background: #3a7bd5 !important;
+            color: white;
+            font-weight: bold;
+        }
+
+        .disabled {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        .shift-label {
+            font-size: 12px;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 5px;
+        }
+
+        .shift-label:first-of-type {
+            background-color: #3949ab;
+            color: #ffffff;
+        }
+
+        .shift-label:last-of-type {
+            background-color: #00838f;
+            color: #ffffff;
+        }
+
+        input[type="checkbox"] {
+            transform: scale(1.3);
+            margin: 5px;
+            cursor: pointer;
+            accent-color: #4a90e2;
+        }
+
+        input[type="checkbox"]:checked {
+            accent-color: #00bcd4;
+        }
+
+        .modal-content {
+            border-radius: 10px;
+            background: #30304a;
+            color: white;
+        }
+
+        .modal-header {
+            background: #3949ab;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
     <h2>Lịch Điểm Danh</h2>
     <h3 class="text-dark" id="current-date"></h3>
     <div class="calendar" id="calendar"></div>
@@ -29,18 +129,10 @@
             </div>
         </div>
     </div>
-@endsection
-
-@section('css')
-    <link rel="stylesheet" href="{{ asset('css/check-in.css') }}">
-@endsection
-
-@section('js')
     <script>
         let selectedCheckbox = null;
-        let scheduleOfEmployee = @json($scheduleOfEmployee);
-        let employeeId = @json(Auth::guard('web')->id() - 1);
-        console.log(scheduleOfEmployee, employeeId);
+        // let scheduleOfEmployee = @json($scheduleOfEmployee);
+        // console.log(scheduleOfEmployee);
         // Kiểm tra thời gian thực có thuộc ca làm việc không
         function isWithinShiftTime(shift) {
             let now = new Date();
@@ -50,7 +142,7 @@
             if (shift === "morning") {
                 return (hours > 7 || (hours === 7 && minutes >= 30)) && (hours < 12);
             } else if (shift === "afternoon") {
-                return (hours > 13 || (hours === 13 && minutes >= 30)) && (hours < 19);
+                return (hours > 13 || (hours === 13 && minutes >= 30)) && (hours < 17);
             }
             return false;
         }
@@ -93,24 +185,12 @@
                 afternoonCheckbox.dataset.day = day;
                 afternoonCheckbox.dataset.shift = "afternoon";
 
-                // ✅ Tự động tick vào ca làm việc đã có
-                scheduleOfEmployee.forEach((shift) => {
-                    let attendanceDate = new Date(shift.attendance_date + " " + shift.attendance_time);
-                    let shiftDay = attendanceDate.getDate();
-                    let shiftHour = attendanceDate.getHours();
+                // Kiểm tra trạng thái điểm danh từ localStorage
+                morningCheckbox.checked = localStorage.getItem(`attendance_${year}_${month}_${day}_morning`) === "true";
+                afternoonCheckbox.checked = localStorage.getItem(`attendance_${year}_${month}_${day}_afternoon`) === "true";
 
-                    if (shiftDay === day && shift.type == 1) {
-                        if (shiftHour < 12) {
-                            morningCheckbox.checked = true;
-                            morningCheckbox.disabled = true;
-                            morningCheckbox.parentElement?.classList.add("checked");
-                        } else {
-                            afternoonCheckbox.checked = true;
-                            afternoonCheckbox.disabled = true;
-                            afternoonCheckbox.parentElement?.classList.add("checked");
-                        }
-                    }
-                });
+                if (morningCheckbox.checked) morningCheckbox.parentElement?.classList.add("checked");
+                if (afternoonCheckbox.checked) afternoonCheckbox.parentElement?.classList.add("checked");
 
                 // Chỉ cho phép điểm danh ngày hiện tại
                 if (day !== currentDay) {
@@ -129,12 +209,8 @@
                 dayDiv.appendChild(afternoonLabel);
                 dayDiv.appendChild(afternoonCheckbox);
                 calendar.appendChild(dayDiv);
-                // document.querySelectorAll("input[type='checkbox']").forEach((checkbox) => {
-                //     checkbox.disabled = true;
-                // });
             }
         }
-
 
         function handleCheckIn(event) {
             event.preventDefault();
@@ -165,7 +241,7 @@
         }
 
         // Xác nhận điểm danh
-        document.getElementById("confirmCheckIn").addEventListener("click", function() {
+        document.getElementById("confirmCheckIn").addEventListener("click", function () {
             if (selectedCheckbox) {
                 let shift = selectedCheckbox.dataset.shift;
                 let day = selectedCheckbox.dataset.day;
@@ -174,67 +250,18 @@
                 let month = today.getMonth() + 1;
                 let key = `attendance_${year}_${month}_${day}_${shift}`;
 
-                const currentYear = today.getFullYear();
-                const currentMonth = String(today.getMonth() + 1).padStart(2, '0'); // Tháng (01-12)
-                const currentDay = String(today.getDate()).padStart(2, '0'); // Ngày (01-31)
-                const hours = String(today.getHours()).padStart(2, '0'); // Giờ (00-23)
-                const minutes = String(today.getMinutes()).padStart(2, '0'); // Phút (00-59)
-                const seconds = String(today.getSeconds()).padStart(2, '0'); // Giây (00-59)
+                // Lưu trạng thái điểm danh vào localStorage
+                localStorage.setItem(key, "true");
 
-                const formattedDate = `${currentYear}-${currentMonth}-${currentDay}`;
-                const formattedTime = `${hours}:${minutes}:${seconds}`;
-
-                console.log(formattedDate, formattedTime, scheduleOfEmployee);
-
-                $.ajax({
-                    url: "{{ route('attendance-time.store') }}",
-                    method: "POST",
-                    headers: {
-                        'X-CSRF-TOKEN': "{{ csrf_token() }}"
-                    },
-                    data: {
-                        employee_id: employeeId,
-                        attendance_date: formattedDate,
-                        attendance_time: formattedTime
-                    },
-                    success: function(response) {
-                        alert("Điểm danh thành công!");
-                        console.log(response);
-                        selectedCheckbox.classList.add("checked-current");
-
-                        selectedCheckbox.checked = true;
-                        selectedCheckbox.disabled = true;
-                        selectedCheckbox.parentElement?.classList.add("checked");
-
-                        localStorage.setItem(key, "true");
-
-                        $('#confirmModal').modal('hide');
-                        // selectedCheckbox.parentElement?.classList.add("checked-current");
-                    },
-                    error: function(xhr, status, error) {
-                        console.error("Lỗi:", xhr.responseText);
-                        alert("Không thể điểm danh, vui lòng thử lại! Lỗi: " + xhr.status + " - " +
-                            error);
-                    }
-                });
-
-                // // Lưu trạng thái điểm danh vào localStorage
-                // localStorage.setItem(key, "true");
-
-                // // Cập nhật giao diện
-                // selectedCheckbox.checked = true;
-                // selectedCheckbox.parentElement?.classList.add("checked");
-
-                // const checkedCurrent = document.querySelector(".checked-current");
-                // if (checkedCurrent) {
-                //     checkedCurrent.disabled = true;
-                // }
-
-                // $('#confirmModal').modal('hide');
+                // Cập nhật giao diện
+                selectedCheckbox.checked = true;
+                selectedCheckbox.parentElement?.classList.add("checked");
+                $('#confirmModal').modal('hide');
             }
         });
 
-
         generateCalendar();
     </script>
-@endsection
+</body>
+
+</html>
