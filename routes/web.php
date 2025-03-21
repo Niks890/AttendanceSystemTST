@@ -6,6 +6,7 @@ use App\Http\Controllers\AttendanceTimeController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\ExportController;
+use App\Http\Controllers\ScannerAttendanceController;
 use App\Http\Controllers\ScheduleShiftController;
 use Illuminate\Support\Facades\Route;
 
@@ -36,9 +37,12 @@ Route::group(['prefix' => '', 'middleware' => 'auth'], function () {
         'schedule-shift' => ScheduleShiftController::class,
     ]);
     Route::get('/attendance/check-in', [AttendanceTimeController::class, 'checkIn'])->name('attendance-time.check-in');
+    Route::get('/attendance/scanner', [ScannerAttendanceController::class, 'index'])->name('scanner-attendance.index');
+    Route::post('/attendance/scanner/upload', [ScannerAttendanceController::class, 'upload'])->name('scanner-attendance.upload');
+    Route::post('/attendance/scanner/upload-json', [ScannerAttendanceController::class, 'uploadFromJson'])->name('scanner-attendance.upload-json');
     Route::get('/schedule', [ScheduleController::class, 'index'])->name('schedule.index');
     Route::get('/schedule/events', [ScheduleController::class, 'getEvents']);
-   
+
     Route::get('/export-excel', [ExportController::class, 'exportExcel'])->name('export.excel');
 
 });

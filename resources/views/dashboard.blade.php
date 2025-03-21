@@ -104,6 +104,13 @@
             </div>
         </div>
     </div>
+
+    @can('managers')
+        Bạn đang là quản lý
+    @elseif('employees')
+        Bạn đang là nhân viên
+    @endcan
+
     <!-- /.container-fluid -->
 @endsection
 

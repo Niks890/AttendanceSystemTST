@@ -91,6 +91,9 @@
                 <div class="bg-white py-2 collapse-inner rounded">
                     <a class="collapse-item text-left" href="{{ route('attendance-time.check-in') }}">Điểm danh</a>
                     <a class="collapse-item" href="{{ route('attendance-product.index') }}">Chấm công theo sản phẩm</a>
+                    @can('managers')
+                    <a class="collapse-item" href="{{ route('scanner-attendance.index') }}">Nạp dữ liệu chấm công</a>
+                    @endcan
                 </div>
             </div>
         </li>
