@@ -19,8 +19,8 @@ class EmployeeController extends Controller
     public function index()
     {
         $data = DB::table('employees as e')
-            ->leftjoin('detail_schedules as ds', 'e.id', '=', 'ds.employee_id')
-            ->leftjoin('schedules as s', 'ds.schedule_id', '=', 's.id')
+            ->leftJoin('detail_schedules as ds', 'e.id', '=', 'ds.employee_id')
+            ->leftJoin('schedules as s', 'ds.schedule_id', '=', 's.id')
             ->select(
                 'e.id',
                 'e.avatar',
@@ -29,11 +29,12 @@ class EmployeeController extends Controller
                 'e.phone',
                 'e.gender',
                 'e.position',
-                'ds.id as detail_schedule_id',
-                's.name as schedule_name',
-                's.time_in',
-                's.time_out'
+                DB::raw('MIN(ds.id) as detail_schedule_id'),
+                DB::raw('MIN(s.name) as schedule_name'),
+                DB::raw('MIN(s.time_in) as time_in'),
+                DB::raw('MIN(s.time_out) as time_out')
             )
+            ->groupBy('e.id', 'e.avatar', 'e.name', 'e.address', 'e.phone', 'e.gender', 'e.position')
             ->get();
         // dd($data);
 
