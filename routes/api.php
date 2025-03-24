@@ -24,4 +24,4 @@ Route::get('/employee/{id}', [ApiController::class, 'employee'])->name('api.empl
 
 // Route::get('/schedule-shift', [ApiController::class, 'getEmployeeList'])->name('api.getEmployeeList');
 Route::post('/schedule-shift', [ApiController::class, 'getEmployeeList']);
-
+Route::post('/check-shift', [ApiController::class, 'checkShift']);

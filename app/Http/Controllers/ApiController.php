@@ -19,7 +19,8 @@ class ApiController extends Controller
         ]);
     }
 
-    public function employee($id) {
+    public function employee($id)
+    {
         $employee = Employee::with('department')->find($id);
         return $this->apiStatus($employee, 200);
     }
@@ -43,24 +44,38 @@ class ApiController extends Controller
     }
 
 
-    public function getEmployeeList(Request $request) {
+    public function getEmployeeList(Request $request)
+    {
         $scheduleId = $request->schedule_id;
         $listId = $request->listId ? explode(',', $request->listId) : [];
-    
+
         if (empty($scheduleId) || empty($listId)) {
             return $this->apiStatus([], 400, 0, "Lịch làm việc hoặc danh sách ID trống");
         }
         $employees = DB::table('employees')
-        ->join('detail_schedules', 'employees.id', '=', 'detail_schedules.employee_id')
-        ->join('schedules', 'detail_schedules.schedule_id', '=', 'schedules.id')
-        ->join('departments', 'employees.department_id', '=', 'departments.id')
-        ->where('schedules.id', $scheduleId)
-        ->whereIn('employees.id', $listId)
-        ->select('employees.*', 'departments.name as department_name')
-        ->get();
+            ->join('detail_schedules', 'employees.id', '=', 'detail_schedules.employee_id')
+            ->join('schedules', 'detail_schedules.schedule_id', '=', 'schedules.id')
+            ->join('departments', 'employees.department_id', '=', 'departments.id')
+            ->where('schedules.id', $scheduleId)
+            ->whereIn('employees.id', $listId)
+            ->select('employees.*', 'departments.name as department_name')
+            ->get();
         return $this->apiStatus($employees, 200, count($employees));
     }
 
-
-    
+    public function checkShift(Request $request)
+    {
+        $workday = $request->workday;
+        $timeIn = $request->time_in;
+        $timeOut = $request->time_out;
+        $employees = DB::table('employees')
+            ->join('detail_schedules', 'employees.id', '=', 'detail_schedules.employee_id')
+            ->join('schedules', 'detail_schedules.schedule_id', '=', 'schedules.id')
+            ->whereDate('detail_schedules.workday', $workday)
+            ->where('schedules.time_in', $timeIn)
+            ->where('schedules.time_out', $timeOut)
+            ->select('employees.id', 'employees.name', 'detail_schedules.workday', 'schedules.time_in', 'schedules.time_out')
+            ->get();
+        return $this->apiStatus($employees, 200, count($employees));
+    }
 }

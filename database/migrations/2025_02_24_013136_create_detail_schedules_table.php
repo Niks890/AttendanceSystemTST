@@ -15,6 +15,7 @@ return new class extends Migration
             $table->increments('id');
             $table->unsignedInteger('schedule_id');
             $table->unsignedInteger('employee_id');
+            $table->date('workday')->nullable();
             $table->unsignedInteger('KPI')->nullable();
             $table->foreign('schedule_id')->references('id')->on('schedules');
             $table->foreign('employee_id')->references('id')->on('employees');
