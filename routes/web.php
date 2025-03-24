@@ -44,6 +44,8 @@ Route::group(['prefix' => '', 'middleware' => 'auth'], function () {
     Route::post('/attendance/scanner/upload-json', [ScannerAttendanceController::class, 'uploadFromJson'])->name('scanner-attendance.upload-json');
     Route::get('/schedule', [ScheduleController::class, 'index'])->name('schedule.index');
     Route::get('/schedule/events', [ScheduleController::class, 'getEvents']);
+    Route::get('/profile', [EmployeeController::class, 'profile'])->name('employee.profile');
+    Route::post('/profile/update', [EmployeeController::class, 'update_profile'])->name('employee.update_profile');
 
     Route::get('/export-excel', [ExportController::class, 'exportExcelEmployee'])->name('export.excel');
     Route::get('/export-excel-schedule/{id}', [ExportController::class, 'exportExcelSchedule'])->name('export.exportExcelSchedule');
