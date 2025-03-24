@@ -15,7 +15,7 @@
 
     <!-- Nav Item - Dashboard -->
     <li class="nav-item active">
-        <a class="nav-link" href="index.html">
+        <a class="nav-link" href="{{ route('dashboard') }}">
             <i class="fas fa-fw fa-tachometer-alt"></i>
             <span>Dashboard</span></a>
     </li>
@@ -54,7 +54,6 @@
             <div id="collapseTwo1" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <a class="collapse-item text-left" href="{{ route('schedule-shift.index') }}">Thông tin các ca làm việc</a>
-                    <a class="collapse-item text-left" href="{{ route('employee.create') }}">Thêm ca làm việc</a>
                 </div>
             </div>
         </li>

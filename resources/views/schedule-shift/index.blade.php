@@ -38,7 +38,7 @@
                             </div>
                         </div>
                         <div class="col-md-3 d-flex justify-content-around align-items-center">
-                            <a href="{{ route('schedule-shift.create') }}" class="btn btn-success me-2">
+                            <a href="{{ route('schedule-shift.create') }}" class="btn btn-success me-2 btn-add-schedule">
                                 <i class="fa fa-plus"></i> Thêm mới
                             </a>
                             <a href="{{ route('export.excel') }}" class="btn btn-primary">
@@ -65,8 +65,8 @@
                             <td>{{ $model->id }}</td>
                             <td>{{ $model->sche_name }}</td>
                             <td class="text-center">
-                                <input type="hidden" name="emp_id" value="{{ $model->emp_id }}">
-                                <a href="javascript:void(0);" class="text-primary show-emp-list">Xem danh sách</a>
+                                <a href="javascript:void(0);" class="text-primary show-emp-list"
+                                    data-id="{{ $model->emp_id }}">Xem danh sách</a>
                             </td>
                             <td>{{ $model->time_in }}</td>
                             <td>{{ $model->time_out }}</td>
@@ -316,9 +316,87 @@
         </div>
     </div> --}}
 
+    {{-- Modal Add Schedule Shift --}}
+    <div class="modal fade" id="addnew">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><b>Tạo ca làm việc</b></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span></button>
+
+                </div>
+                <div class="modal-body text-left">
+                    <form class="form-horizontal" method="POST" action="">
+                        @csrf
+                        <div class="form-group">
+                            <label for="name" class="col-sm-6 control-label">Tên ca làm việc <i>{*}</i></label>
+
+
+                            <div class="bootstrap-timepicker">
+                                <input type="text" placeholder="Nhập tên ca làm việc" class="form-control timepicker"
+                                    id="name" name="slug">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="time_in" class="col-sm-3 control-label">Giờ bắt đầu</label>
+                            <div class="bootstrap-timepicker">
+                                <input type="time" class="form-control timepicker" id="time_in" name="time_in"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="time_out" class="col-sm-3 control-label">Giờ kết thúc</label>
+                            <div class="bootstrap-timepicker">
+                                <input type="time" class="form-control timepicker" id="time_out" name="time_out"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="time_out" class="col-sm-3 control-label">KPI</label>
+                            <div class="bootstrap-timepicker">
+                                <input type="number" class="form-control timepicker" id="KPI" name="KPI"
+                                    required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="employee_list" class="col-sm-6 control-label">Danh sách nhân viên</label>
+                            <div class="bootstrap-timepicker">
+                                <a href="javascript:void(0);" class="text-primary show-add-emp-list">Nạp danh sách nhân
+                                    viên cho ca làm việc</a>
+
+                                <!-- Dropdown hiển thị danh sách nhân viên đã chọn -->
+                                <div class="dropdown mt-2">
+                                    <button class="btn btn-primary dropdown-toggle" type="button"
+                                        id="selectedEmployeeCount" data-toggle="dropdown" aria-haspopup="true"
+                                        aria-expanded="false">
+                                        Chưa chọn nhân viên nào
+                                    </button>
+                                    <div class="dropdown-menu" id="selectedEmployeeDropdown"
+                                        aria-labelledby="selectedEmployeeCount">
+                                        <!-- Danh sách nhân viên được thêm vào đây -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger btn-flat pull-left" data-dismiss="modal"><i
+                            class="fa fa-close"></i> Thoát</button>
+                    <button type="submit" class="btn btn-success btn-flat" id="saveShift"><i class="fa fa-save"></i> Lưu</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
     <!-- Modal xem danh sách nhân viên -->
-    <div class="modal fade" id="employeeListModal" tabindex="-1" role="dialog" aria-labelledby="employeeListModalLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="employeeListModal" tabindex="-1" role="dialog"
+        aria-labelledby="employeeListModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -349,6 +427,28 @@
         </div>
     </div>
 
+
+    <div class="modal fade" id="employeeAddListModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Chọn danh sách nhân viên</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-bordered" id="employeeAddList"></table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="addShift">Lưu</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 @endsection
 
 @section('css')
@@ -356,6 +456,7 @@
 @endsection
 
 @section('js')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     @if (Session::has('success'))
         <script src="{{ asset('js/message.js') }}"></script>
     @endif
@@ -364,13 +465,8 @@
         $(document).ready(function() {
             $('.show-emp-list').click(function(e) {
                 e.preventDefault();
-
-                let empIds = $(this).closest('tr').find('input[name="emp_id"]').val();
+                let empIds = $(this).data('id');
                 let scheduleId = $(this).closest('tr').find('td').eq(0).text();
-
-                // console.log("Danh sách ID: " + empIds);
-                // console.log("Schedule ID: " + scheduleId);
-
                 $.ajax({
                     type: 'POST',
                     url: '/api/schedule-shift',
@@ -410,9 +506,121 @@
                     }
                 });
             });
+
+            $('.btn-add-schedule').click(function(e) {
+                e.preventDefault();
+                $('#addnew').modal('show');
+            });
+
+            $('.show-add-emp-list').click(function(e) {
+                e.preventDefault();
+                // let add_EmpIds = $(this).data('listId');
+                // console.log(add_EmpIds);
+                let empList = @json($employeeList);
+                // console.log(empList);
+                let employeeAddList = '';
+                let rowIndex = 1;
+                employeeAddList += `
+                            <tr>
+                                <th><input type="checkbox" id="selectAll"></th>
+                                <th>STT</th>
+                                <th>ID</th>
+                                <th>Tên</th>
+                            </tr>
+                        `;
+                empList.forEach(function(employee) {
+                    let empIds = employee.emp_ids.split(',');
+                    let empNames = employee.emp_names.split(',');
+                    empIds.forEach((id, index) => {
+                        employeeAddList += `
+                                        <tr>
+                                            <td><input type="checkbox" class="emp-checkbox" value="${id}"></td>
+                                            <td>${rowIndex++}</td>
+                                            <td>${id}</td>
+                                            <td>${empNames[index]}</td>
+                                        </tr>`;
+                    });
+                });
+
+                $('#employeeAddList').html(employeeAddList);
+                $('#employeeAddListModal').modal('show');
+
+                // Xử lý chọn tất cả
+                $('#selectAll').click(function() {
+                    $('.emp-checkbox').prop('checked', this.checked);
+                });
+
+                // Xử lý chọn nhân viên riêng lẻ
+                $(document).on('change', '.emp-checkbox', function() {
+                    // Nếu có bất kỳ checkbox nào chưa được chọn, bỏ chọn "Chọn tất cả"
+                    if ($('.emp-checkbox:checked').length !== $('.emp-checkbox').length) {
+                        $('#selectAll').prop('checked', false);
+                    }
+                    // Nếu tất cả đều được chọn, đánh dấu "Chọn tất cả"
+                    else {
+                        $('#selectAll').prop('checked', true);
+                    }
+                });
+                // Xử lý khi bấm nút thêm ca làm việc
+                $('#addShift').click(function() {
+                    let selectedEmpIds = [];
+                    let selectedEmpNames = [];
+                    $('.emp-checkbox:checked').each(function() {
+                        selectedEmpIds.push($(this).val());
+                        selectedEmpNames.push($(this).closest('tr').find('td').eq(3)
+                    .text());
+                    });
+
+                    // Đổ dữ liệu ra modal bên ngoài
+                    $('#selectedEmployeeCount').text(
+                    `Đã chọn ${selectedEmpNames.length} nhân viên`);
+                    let dropdownList = '';
+                    selectedEmpNames.forEach((name, index) => {
+                        dropdownList +=
+                        `<a class="dropdown-item">${index + 1}. ${name}</a>`;
+                    });
+
+                    $('#selectedEmployeeDropdown').html(dropdownList);
+                    $('#employeeAddListModal').modal('hide');
+                    $('#addnew').modal('show');
+                    // console.log(selectedEmpIds);
+
+                    // Xử lý lưu vào database
+                    $('#saveShift').click(function() {
+                        let shiftName = $('#name').val();
+                        let timeIn = $('#time_in').val();
+                        let timeOut = $('#time_out').val();
+                        let KPI = $('#KPI').val();
+                        console.log(selectedEmpIds);
+
+
+                        $.ajax({
+                            url: '{{ route('schedule-shift.store') }}',
+                            method: 'POST',
+                            data: {
+                                shift_name: shiftName,
+                                time_in: timeIn,
+                                time_out: timeOut,
+                                KPI: KPI,
+                                employee_ids: selectedEmpIds,
+                                _token: '{{ csrf_token() }}'
+                            },
+                            success: function(response) {
+                                alert('Ca làm việc đã được lưu thành công!');
+                                $('#addnew').modal('hide');
+                                location.reload();
+                            },
+                            error: function(xhr) {
+                                alert('Đã xảy ra lỗi khi lưu ca làm việc!');
+                                console.error(xhr.responseText);
+                            }
+                        });
+                    });
+                });
+
+            });
         });
     </script>
-
 
 @endsection
 @else
