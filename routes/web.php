@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -30,6 +31,7 @@ Route::get('/logout', [AdminController::class, 'logout'])->name('logout');
 Route::group(['prefix' => '', 'middleware' => 'auth'], function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/employee/search', [EmployeeController::class, 'search'])->name('employee.search');
+    Route::get('/schedule/search', [ScheduleShiftController::class, 'search'])->name('schedule.search');
     Route::resources([
         'employee' => EmployeeController::class,
         'attendance-time' => AttendanceTimeController::class,
@@ -43,6 +45,6 @@ Route::group(['prefix' => '', 'middleware' => 'auth'], function () {
     Route::get('/schedule', [ScheduleController::class, 'index'])->name('schedule.index');
     Route::get('/schedule/events', [ScheduleController::class, 'getEvents']);
 
-    Route::get('/export-excel', [ExportController::class, 'exportExcel'])->name('export.excel');
-
+    Route::get('/export-excel', [ExportController::class, 'exportExcelEmployee'])->name('export.excel');
+    Route::get('/export-excel-schedule/{id}', [ExportController::class, 'exportExcelSchedule'])->name('export.exportExcelSchedule');
 });
