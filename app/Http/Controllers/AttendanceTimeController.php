@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Attendance;
+use App\Models\DetailSchedule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -14,28 +15,35 @@ class AttendanceTimeController extends Controller
      */
     public function index()
     {
-        $attendances = collect([
-            (object)[
-                'attendance_date' => '06-03-2025',
-                'emp_id' => 'EMP001',
-                'employee' => (object)[
-                    'name' => 'Nguyễn Văn A',
-                    'schedules' => collect([(object)['time_in' => '08:00', 'time_out' => '17:00']])
-                ],
-                'attendance_time' => '08:00',
-                'status' => 1
-            ],
-            (object)[
-                'attendance_date' => '06-03-2025',
-                'emp_id' => 'EMP002',
-                'employee' => (object)[
-                    'name' => 'Trần Thị B',
-                    'schedules' => collect([(object)['time_in' => '08:00', 'time_out' => '17:00']])
-                ],
-                'attendance_time' => '08:30',
-                'status' => 0
-            ]
-        ]);
+        // $attendances = collect([
+        //     (object)[
+        //         'attendance_date' => '06-03-2025',
+        //         'emp_id' => 'EMP001',
+        //         'employee' => (object)[
+        //             'name' => 'Nguyễn Văn A',
+        //             'schedules' => collect([(object)['time_in' => '08:00', 'time_out' => '17:00']])
+        //         ],
+        //         'attendance_time' => '08:00',
+        //         'status' => 1
+        //     ],
+        //     (object)[
+        //         'attendance_date' => '06-03-2025',
+        //         'emp_id' => 'EMP002',
+        //         'employee' => (object)[
+        //             'name' => 'Trần Thị B',
+        //             'schedules' => collect([(object)['time_in' => '08:00', 'time_out' => '17:00']])
+        //         ],
+        //         'attendance_time' => '08:30',
+        //         'status' => 0
+        //     ]
+        // ]);
+        $attendances = DB::table('detail_schedules as ds')
+            ->join('schedules as s', 's.id', '=', 'ds.schedule_id')
+            ->join('employees as e', 'ds.employee_id', '=', 'e.id')
+            ->join('attendances as a', 'e.id', '=', 'a.employee_id')
+            ->whereColumn('ds.workday', 'a.attendance_date')
+            ->select('ds.workday', 'e.id as emp_id', 'e.name', 'a.attendance_time', 's.time_in', 's.time_out')
+            ->get();
 
         return view('attendancetime.index', compact('attendances'));
     }
