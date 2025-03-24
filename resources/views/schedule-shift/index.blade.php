@@ -339,13 +339,20 @@
                             </div>
                         </div>
                         <div class="form-group">
+                            <label for="time_out" class="col-sm-3 control-label text-nowrap">Ngày làm việc</label>
+                            <div class="bootstrap-timepicker">
+                                <input type="date" class="form-control datepicker workday" id="workday" name="workday"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="form-group d-none time-in-out time-in">
                             <label for="time_in" class="col-sm-3 control-label">Giờ bắt đầu</label>
                             <div class="bootstrap-timepicker">
                                 <input type="time" class="form-control timepicker" id="time_in" name="time_in"
                                     required>
                             </div>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group d-none time-in-out time-out">
                             <label for="time_out" class="col-sm-3 control-label">Giờ kết thúc</label>
                             <div class="bootstrap-timepicker">
                                 <input type="time" class="form-control timepicker" id="time_out" name="time_out"
@@ -544,6 +551,7 @@
                     });
                 });
 
+
                 $('#employeeAddList').html(employeeAddList);
                 $('#employeeAddListModal').modal(
                     'show');
@@ -623,6 +631,245 @@
                     });
                 });
 
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            $('.workday').on('change', function() {
+                let workday = $(this).val();
+                if (workday) {
+                    $('.time-in-out').removeClass('d-none');
+                } else {
+                    $('.time-in-out').addClass('d-none');
+                }
+                // let timeIn = $('.time_in').val();
+                // let timeOut = $('.time_out').val();
+                // if (timeIn && timeOut && workday) {
+                //     console.log(timeIn, timeOut, workday);
+                // }
+                $('.time-in-out').on('change', function() {
+                    let timeIn = $('#time_in').val();
+                    let timeOut = $('#time_out').val();
+                    if (timeIn && timeOut && workday) {
+                        console.log(timeIn, timeOut, workday);
+                    }
+                    $.ajax({
+                        url: '/api/check-shift',
+                        method: 'POST',
+                        data: {
+                            workday: workday,
+                            time_in: timeIn,
+                            time_out: timeOut,
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(response) {
+
+                            let listEmp = @json($employeeList);
+                            console.log(listEmp);
+                            let employeeHasShift = [];
+                            response.data.forEach(function(employee) {
+                                employeeHasShift.push(employee.id.toString());
+                                // console.log(employee)
+                            })
+                            // let listEmpId = listEmp[0].emp_ids.split(',').map((id) =>
+                            //     parseInt(id));
+                            // const result = listEmpId.filter(item => !employeeHasShift
+                            //     .includes(item));
+                            // console.log(employeeHasShift, listEmpId, result);
+                            console.log(employeeHasShift);
+
+                            // Tách chuỗi thành mảng
+                            const idsArray = listEmp[0].emp_ids.split(',');
+                            const namesArray = listEmp[0].emp_names.split(',');
+
+                            // Các ID cần loại bỏ
+                            const removeIds = employeeHasShift;
+
+                            // Lọc lại mảng
+                            const filteredIds = [];
+                            const filteredNames = [];
+
+                            idsArray.forEach((id, index) => {
+                                if (!removeIds.includes(id)) {
+                                    filteredIds.push(id);
+                                    filteredNames.push(namesArray[index]);
+                                }
+                            });
+
+                            let employeeAddListHasNoShift = [{
+                                "emp_ids": `${filteredIds.join(',')}`,
+                                "emp_names": `${filteredNames.join(',')}`
+                            }];
+                            // console.log(employeeAddList);
+
+                            $('.show-add-emp-list').click(function(e) {
+                                e.preventDefault();
+                                // let add_EmpIds = $(this).data('listId');
+                                // console.log(add_EmpIds);
+                                let empList = employeeAddListHasNoShift;
+                                // console.log(empList);
+                                let employeeAddList = '';
+                                let rowIndex = 1;
+                                employeeAddList += `
+                            <tr>
+                                <th><input type="checkbox" id="selectAll"></th>
+                                <th>STT</th>
+                                <th>ID</th>
+                                <th>Tên</th>
+                            </tr>
+                        `;
+                                empList.forEach(function(employee) {
+                                    let empIds = employee.emp_ids ?
+                                        employee.emp_ids.split(',') :
+                                    [];
+                                    let empNames = employee.emp_names ?
+                                        employee.emp_names.split(',') :
+                                        [];
+
+                                    empIds.forEach((id, index) => {
+                                        employeeAddList += `
+                                        <tr>
+                                            <td><input type="checkbox" class="emp-checkbox" value="${id}"></td>
+                                            <td>${rowIndex++}</td>
+                                            <td>${id}</td>
+                                            <td>${empNames[index]}</td>
+                                        </tr>`;
+                                    });
+                                });
+
+
+                                $('#employeeAddList').html(employeeAddList);
+                                $('#employeeAddListModal').modal(
+                                    'show');
+
+                                // Xử lý chọn tất cả
+                                $('#selectAll').click(function() {
+                                    $('.emp-checkbox').prop('checked',
+                                        this.checked);
+                                });
+
+                                // Xử lý chọn nhân viên riêng lẻ
+                                $(document).on('change', '.emp-checkbox',
+                                    function() {
+                                        // Nếu có bất kỳ checkbox nào chưa được chọn, bỏ chọn "Chọn tất cả"
+                                        if ($('.emp-checkbox:checked')
+                                            .length !== $('.emp-checkbox')
+                                            .length) {
+                                            $('#selectAll').prop('checked',
+                                                false);
+                                        }
+                                        // Nếu tất cả đều được chọn, đánh dấu "Chọn tất cả"
+                                        else {
+                                            $('#selectAll').prop('checked',
+                                                true);
+                                        }
+                                    });
+                                // Xử lý khi bấm nút thêm ca làm việc
+                                $('#addShift').off('click').click(function() {
+                                    let selectedEmpIds = [];
+                                    let selectedEmpNames = [];
+                                    $('.emp-checkbox:checked').each(
+                                        function() {
+                                            selectedEmpIds.push($(
+                                                this).val());
+                                            selectedEmpNames.push($(
+                                                    this)
+                                                .closest('tr')
+                                                .find('td').eq(
+                                                    3)
+                                                .text());
+                                        });
+
+                                    // Đổ dữ liệu ra modal bên ngoài
+                                    $('#selectedEmployeeCount').text(
+                                        `Đã chọn ${selectedEmpNames.length} nhân viên`
+                                    );
+                                    let dropdownList = '';
+                                    selectedEmpNames.forEach((name,
+                                        index) => {
+                                        dropdownList +=
+                                            `<a class="dropdown-item">${index + 1}. ${name}</a>`;
+                                    });
+
+                                    $('#selectedEmployeeDropdown').html(
+                                        dropdownList);
+                                    $('#employeeAddListModal').modal(
+                                        'hide');
+                                    $('#addnew').modal('show');
+                                    // console.log(selectedEmpIds);
+
+                                    // Xử lý lưu vào database
+                                    $('#saveShift').click(function() {
+                                        let shiftName = $(
+                                            '#name').val();
+                                        let timeIn = $(
+                                                '#time_in')
+                                            .val();
+                                        let timeOut = $(
+                                                '#time_out')
+                                            .val();
+                                        let KPI = $('#KPI')
+                                            .val();
+                                        let workday = $(
+                                                '#workday')
+                                            .val();
+                                        console.log(
+                                            selectedEmpIds);
+
+
+                                        $.ajax({
+                                            url: '{{ route('schedule-shift.store') }}',
+                                            method: 'POST',
+                                            data: {
+                                                shift_name: shiftName,
+                                                time_in: timeIn,
+                                                time_out: timeOut,
+                                                KPI: KPI,
+                                                workday: workday,
+                                                employee_ids: selectedEmpIds,
+                                                _token: '{{ csrf_token() }}'
+                                            },
+                                            success: function(
+                                                response
+                                            ) {
+                                                alert
+                                                    (
+                                                        'Ca làm việc đã được lưu thành công!'
+                                                    );
+                                                $('#addnew')
+                                                    .modal(
+                                                        'hide'
+                                                    );
+                                                location
+                                                    .reload();
+                                            },
+                                            error: function(
+                                                xhr
+                                            ) {
+                                                alert
+                                                    (
+                                                        'Đã xảy ra lỗi khi lưu ca làm việc!'
+                                                    );
+                                                console
+                                                    .error(
+                                                        xhr
+                                                        .responseText
+                                                    );
+                                            }
+                                        });
+                                    });
+                                });
+
+                            });
+
+                        },
+                        error: function(xhr) {
+                            console.error(xhr.responseText);
+                        }
+                    })
+                });
             });
         });
     </script>
