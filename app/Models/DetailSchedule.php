@@ -12,6 +12,7 @@ class DetailSchedule extends Model
     protected $fillable = [
         'schedule_id',
         'employee_id',
+        'workday',
         'KPI',
     ];
 

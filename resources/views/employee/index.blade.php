@@ -59,18 +59,25 @@
                         <th class="scope">SĐT</th>
                         <th class="scope">Giới tính</th>
                         <th class="scope">Chức vụ</th>
+                        <th class="scope">Lịch làm việc</th>
                         <th class="scope text-center">Hành động</th>
                     </tr>
                     @foreach ($data as $model)
                         <tr class="text-dark">
                             <td>{{ $model->id }}</td>
-                            <td><img src="{{ asset('uploads/' . $model->avatar) }}" width="70px" height="70px"
-                                    alt=""></td>
+                            <td><img src="{{ asset('uploads/' . $model->avatar) }}" width="70px" height="70px" alt=""></td>
                             <td>{{ $model->name }}</td>
                             <td>{{ $model->address }}</td>
                             <td>{{ $model->phone }}</td>
                             <td>{{ $model->gender == 0 ? 'Nam' : 'Nữ' }}</td>
                             <td>{{ $model->position }}</td>
+                            <td>
+                                @if ($model->detail_schedule_id == null)
+                                    Nhân viên chưa được phân công
+                                @else
+                                    {{ $model->schedule_name }} từ {{ $model->time_in }} đến {{ $model->time_out }}
+                                @endif
+                            </td>
                             <td class="text-center">
                                 <button type="button" class="btn btn-sm btn-warning btn-edit"
                                     data-id="{{ $model->id }}">
@@ -84,7 +91,6 @@
                                     data-name="{{ $model->name }}">
                                     <i class="fa fa-trash"></i> Xóa
                                 </button>
-
                             </td>
                         </tr>
                     @endforeach
@@ -131,8 +137,8 @@
             <div class="modal-content">
                 <div class="modal-header bg-secondary text-white">
                     <h5 class="modal-title" id="employeeEditLabel">Chỉnh sửa Nhân Viên</h5>
-                    <button type="button" class="btn-close border-0 bg-secondary font-weight-bold text-white"
-                        data-bs-dismiss="modal" aria-label="Close">X</button>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span></button>
                 </div>
                 <div class="modal-body">
                     <form action="{{ route('employee.update', 0) }}" id="form-edit" method="post"
@@ -184,7 +190,7 @@
                             </div>
                         </div>
                         <div class="row g-3 mt-2">
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <label class="form-label">Giới tính:</label>
                                 <select name="gender" class="form-control" id="employee-edit-gender" required>
                                     <option value="0">Nam</option>
@@ -194,7 +200,7 @@
                                     <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <label class="form-label">Chức vụ:</label>
                                 <select name="position" id="employee-edit-position" class="form-control" required>
                                     <option value="Nhân viên xưởng">Nhân viên xưởng</option>
@@ -202,7 +208,10 @@
                                     <option value="Nhân viên quản lý">Nhân viên sản xuất</option>
                                 </select>
                             </div>
-                            <div class="col-md-4">
+                        </div>
+
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-6">
                                 <label class="form-label">Phòng ban:</label>
                                 <select name="department_id" id="employee-edit-department" class="form-control" required>
                                     @foreach ($departments as $item)
@@ -210,13 +219,22 @@
                                     @endforeach
                                 </select>
                             </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Lịch làm việc:</label>
+                                <select name="schedule_id" id="employee-edit-schedule" class="form-control" required>
+                                    @foreach ($schedules as $item)
+                                        <option value="{{ $item->id }}">{{ $item->name }} từ {{ $item->time_in }} đến {{ $item->time_out }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
+
                         <div class="row mt-3">
                             <!-- Input chọn ảnh -->
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold">Ảnh đại diện:</label>
                                 <input type="file" name="avatar" id="employee-edit-avatar" class="form-control"
-                                    accept="image/*" required id="avatar-input">
+                                    accept="image/*" id="avatar-input">
                                 @error('avatar')
                                     <small class="text-danger">{{ $message }}</small>
                                 @enderror
@@ -423,9 +441,8 @@
                     success: function(response) {
                         if (response.status_code === 200) {
                             let employeeInfo = response.data;
-                            // console.log(employeeInfo);
-                            $("#form-edit").attr("action", baseUpdateUrl.replace(':id',
-                                employeeInfo.id));
+                            console.log(employeeInfo);
+                            $("#form-edit").attr("action", baseUpdateUrl.replace(':id', employeeInfo.id));
                             $("#employee-edit-id").val(employeeInfo.id);
                             $("#avatar-preview").attr("src", `uploads/${employeeInfo.avatar}`);
                             $("#employee-edit-name").val(employeeInfo.name);
@@ -434,7 +451,8 @@
                             $("#employee-edit-address").val(employeeInfo.address);
                             $("#employee-edit-position").val(employeeInfo.position);
                             $("#employee-edit-gender").val(employeeInfo.gender);
-                            $("#department-name").val(employeeInfo.department.name);
+                            $("#employee-edit-department").val(employeeInfo.department.id);
+                            $("#employee-edit-schedule").val(employeeInfo.detail_schedules[0].schedule_id);
                             $("#employeeEdit").modal("show");
                         } else {
                             alert("Không thể lấy dữ liệu chi tiết!");

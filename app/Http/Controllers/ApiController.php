@@ -20,7 +20,7 @@ class ApiController extends Controller
     }
 
     public function employee($id) {
-        $employee = Employee::with('department')->find($id);
+        $employee = Employee::with('department', 'detailSchedules')->find($id);
         return $this->apiStatus($employee, 200);
     }
 
@@ -46,7 +46,7 @@ class ApiController extends Controller
     public function getEmployeeList(Request $request) {
         $scheduleId = $request->schedule_id;
         $listId = $request->listId ? explode(',', $request->listId) : [];
-    
+
         if (empty($scheduleId) || empty($listId)) {
             return $this->apiStatus([], 400, 0, "Lịch làm việc hoặc danh sách ID trống");
         }
@@ -62,5 +62,5 @@ class ApiController extends Controller
     }
 
 
-    
+
 }

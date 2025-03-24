@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Department;
+use App\Models\DetailSchedule;
 use App\Models\Employee;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 
@@ -16,9 +18,31 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        $data = Employee::paginate(5);
+        $data = DB::table('employees as e')
+            ->leftjoin('detail_schedules as ds', 'e.id', '=', 'ds.employee_id')
+            ->leftjoin('schedules as s', 'ds.schedule_id', '=', 's.id')
+            ->select(
+                'e.id',
+                'e.avatar',
+                'e.name',
+                'e.address',
+                'e.phone',
+                'e.gender',
+                'e.position',
+                'ds.id as detail_schedule_id',
+                's.name as schedule_name',
+                's.time_in',
+                's.time_out'
+            )
+            ->get();
+        // dd($data);
+
         $departments = Department::all();
-        return view('employee.index', compact('data', 'departments'));
+        $schedules = DB::table('schedules as s')
+            ->join('detail_schedules as ds', 's.id', '=', 'ds.schedule_id')
+            ->get();
+        // dd($schedules);
+        return view('employee.index', compact('data', 'departments', 'schedules'));
     }
 
     /**
@@ -129,6 +153,7 @@ class EmployeeController extends Controller
             'position' => 'required',
             'department_id' => 'required',
             'avatar' => 'nullable|image|mimes:jpg,png,jpeg,webp',
+            'schedule_id' => 'required',
         ], [
             'name.required' => 'Vui lòng nhập tên',
             'email.required' => 'Vui lòng nhập email',
@@ -138,6 +163,7 @@ class EmployeeController extends Controller
             'gender.required' => 'Vui lòng chọn giới tính',
             'position.required' => 'Vui lòng nhập vị trí',
             'department_id.required' => 'Vui lòng chọn phòng ban',
+            'schedule_id.required' => 'Vui lòng chọn lịch làm việc',
         ]);
 
         // Cập nhật thông tin employee
@@ -157,6 +183,17 @@ class EmployeeController extends Controller
         }
 
         $employee->save();
+
+        $detail_schedule = DetailSchedule::where('employee_id', $employee->id)->first();
+        if ($detail_schedule) {
+            $detail_schedule->schedule_id = $data['schedule_id'];
+            $detail_schedule->save();
+        } else {
+            DetailSchedule::create([
+                'employee_id' => $employee->id,
+                'schedule_id' => $data['schedule_id'],
+            ]);
+        }
 
         // Tìm user liên kết và cập nhật user
         $user = User::where('email', $employee->email)->first();
@@ -190,11 +227,60 @@ class EmployeeController extends Controller
         }
     }
 
-    public function search(Request $request) {
+    public function search(Request $request)
+    {
         $query = $request->input('query');
         $data = Employee::where('name', 'like', '%' . $query . '%')->get();
         $departments = Department::all();
 
         return view('employee.index', compact('data', 'query', 'departments'));
+    }
+
+    public function profile()
+    {
+        $employee = Employee::find(auth()->user()->id - 1);
+        // dd($employee);
+        return view('employee.profile', compact('employee'));
+    }
+
+    public function update_profile(Request $request)
+    {
+        // Lấy employee của user đang đăng nhập
+        $user = auth()->user();
+        $employee = Employee::where('email', $user->email)->first();
+
+        if (!$employee) {
+            abort(404, 'Không tìm thấy nhân viên');
+        }
+
+        $data = $request->validate([
+            'name' => 'required',
+            'email' => 'required|unique:employees,email,' . $employee->id,
+            'address' => 'required',
+            'phone' => 'required',
+            'avatar' => 'nullable|image|mimes:jpg,png,jpeg,webp',
+        ]);
+
+        // Update employee
+        $employee->update([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'address' => $data['address'],
+            'phone' => $data['phone'],
+        ]);
+
+        if ($request->hasFile('avatar')) {
+            $file_name = $request->avatar->hashName();
+            $request->avatar->move(public_path('uploads'), $file_name);
+            $employee->avatar = $file_name;
+            $employee->save();
+        }
+
+        // Sync với bảng users
+        $user->name = $data['name'];
+        $user->email = $data['email'];
+        $user->save();
+
+        return redirect()->back()->with('success', 'Cập nhật hồ sơ thành công');
     }
 }
