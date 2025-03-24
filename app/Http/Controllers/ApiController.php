@@ -19,7 +19,8 @@ class ApiController extends Controller
         ]);
     }
 
-    public function employee($id) {
+    public function employee($id)
+    {
         $employee = Employee::with('department', 'detailSchedules')->find($id);
         return $this->apiStatus($employee, 200);
     }
