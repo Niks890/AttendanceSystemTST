@@ -385,7 +385,8 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger btn-flat pull-left" data-dismiss="modal"><i
                             class="fa fa-close"></i> Thoát</button>
-                    <button type="submit" class="btn btn-success btn-flat" id="saveShift"><i class="fa fa-save"></i> Lưu</button>
+                    <button type="submit" class="btn btn-success btn-flat" id="saveShift"><i class="fa fa-save"></i>
+                        Lưu</button>
                     </form>
                 </div>
             </div>
@@ -529,8 +530,9 @@
                             </tr>
                         `;
                 empList.forEach(function(employee) {
-                    let empIds = employee.emp_ids.split(',');
-                    let empNames = employee.emp_names.split(',');
+                    let empIds = employee.emp_ids ? employee.emp_ids.split(',') : [];
+                    let empNames = employee.emp_names ? employee.emp_names.split(',') : [];
+
                     empIds.forEach((id, index) => {
                         employeeAddList += `
                                         <tr>
@@ -543,7 +545,8 @@
                 });
 
                 $('#employeeAddList').html(employeeAddList);
-                $('#employeeAddListModal').modal('show');
+                $('#employeeAddListModal').modal(
+                    'show');
 
                 // Xử lý chọn tất cả
                 $('#selectAll').click(function() {
@@ -568,16 +571,16 @@
                     $('.emp-checkbox:checked').each(function() {
                         selectedEmpIds.push($(this).val());
                         selectedEmpNames.push($(this).closest('tr').find('td').eq(3)
-                    .text());
+                            .text());
                     });
 
                     // Đổ dữ liệu ra modal bên ngoài
                     $('#selectedEmployeeCount').text(
-                    `Đã chọn ${selectedEmpNames.length} nhân viên`);
+                        `Đã chọn ${selectedEmpNames.length} nhân viên`);
                     let dropdownList = '';
                     selectedEmpNames.forEach((name, index) => {
                         dropdownList +=
-                        `<a class="dropdown-item">${index + 1}. ${name}</a>`;
+                            `<a class="dropdown-item">${index + 1}. ${name}</a>`;
                     });
 
                     $('#selectedEmployeeDropdown').html(dropdownList);
@@ -606,7 +609,9 @@
                                 _token: '{{ csrf_token() }}'
                             },
                             success: function(response) {
-                                alert('Ca làm việc đã được lưu thành công!');
+                                alert(
+                                    'Ca làm việc đã được lưu thành công!'
+                                );
                                 $('#addnew').modal('hide');
                                 location.reload();
                             },
