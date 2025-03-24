@@ -25,13 +25,13 @@
 
         <div class="card shadow">
             <div class="card-sub p-3">
-                <form method="GET" action="{{ route('employee.search') }}">
+                <form method="GET" action="{{ route('schedule.search') }}">
                     {{-- @csrf --}}
                     <div class="row align-items-center">
                         <div class="col-md-9">
                             <div class="input-group shadow-sm rounded">
                                 <input name="query" type="text" class="form-control border-0 rounded-start"
-                                    placeholder="Nhập tên nhân viên..." />
+                                    placeholder="Nhập tên ca, hoặc id ca..." />
                                 <button type="submit" class="btn btn-primary text-white rounded-end">
                                     <i class="fa fa-search"></i>
                                 </button>
@@ -40,9 +40,6 @@
                         <div class="col-md-3 d-flex justify-content-around align-items-center">
                             <a href="{{ route('schedule-shift.create') }}" class="btn btn-success me-2 btn-add-schedule">
                                 <i class="fa fa-plus"></i> Thêm mới
-                            </a>
-                            <a href="{{ route('export.excel') }}" class="btn btn-primary">
-                                <i class="fas fa-download fa-sm text-white-50"></i> In danh sách
                             </a>
                         </div>
                     </div>
@@ -55,6 +52,7 @@
                         <th class="scope">ID</th>
                         <th class="scope">Tên ca làm việc</th>
                         <th class="scope">Nhân viên làm việc</th>
+                        <th class="scope">Ngày làm việc</th>
                         <th class="scope">Time in</th>
                         <th class="scope">Time out</th>
                         <th class="scope">KPI</th>
@@ -68,22 +66,25 @@
                                 <a href="javascript:void(0);" class="text-primary show-emp-list"
                                     data-id="{{ $model->emp_id }}">Xem danh sách</a>
                             </td>
+                            <td>{{ $model->workday }}</td>
                             <td>{{ $model->time_in }}</td>
                             <td>{{ $model->time_out }}</td>
                             <td>{{ $model->KPI }}</td>
                             <td class="text-center">
-                                <button type="button" class="btn btn-sm btn-warning btn-edit"
-                                    data-id="{{ $model->id }}">
-                                    <i class="fa fa-pen"></i> Sửa
-                                </button>
+                                <a href="{{ route('export.exportExcelSchedule', $model->id) }}"
+                                    class="btn btn-sm btn-warning">
+                                    <i class="fa fa-print"></i> In
+                                </a>
                                 <button type="button" class="btn btn-sm btn-primary btn-detail">
                                     <i class="fa fa-eye"></i> Xem chi tiết
                                 </button>
-                                <button type="button" class="btn btn-sm btn-danger btn-delete" data-bs-toggle="modal"
-                                    data-bs-target="#employeeDelete" data-id="{{ $model->id }}"
-                                    data-name="{{ $model->name }}">
+
+                                <a href="javascript:void(0);" class="btn btn-sm btn-danger btn-delete"
+                                    data-id="{{ $model->id }}" data-name="{{ $model->sche_name }}"
+                                    data-bs-toggle="modal" data-bs-target="#scheduleDelete">
                                     <i class="fa fa-trash"></i> Xóa
-                                </button>
+                                </a>
+
 
                             </td>
                         </tr>
@@ -94,152 +95,38 @@
     </div>
     <!-- /.container-fluid -->
 
-    <!-- Modal Xác nhận Xóa Nhân viên -->
-    {{-- <div class="modal fade" id="employeeDelete" tabindex="-1" aria-labelledby="employeeDeleteLabel" aria-hidden="true">
+    <!-- Modal Xác nhận Xóa Lịch Làm Việc -->
+    <div class="modal fade" id="scheduleDelete" tabindex="-1" aria-labelledby="scheduleDeleteLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
 
-                <!-- Header -->
+
                 <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title" id="employeeDeleteLabel">Xác nhận xóa nhân viên</h5>
-                    <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title" id="scheduleDeleteLabel">Xác nhận xóa lịch làm việc</h5>
+                    <button type="button" class="btn-close text-dark bg-danger border-0 font-weight-bold off-modal"
+                        data-bs-dismiss="modal" aria-label="Close">X</button>
                 </div>
 
-                <!-- Body -->
+
                 <div class="modal-body">
-                    <p>Bạn có chắc chắn muốn xóa nhân viên <strong id="employee-name-delete"></strong> không?</p>
+                    <p>Bạn có chắc chắn muốn xóa lịch làm việc <strong id="schedule-name-delete"></strong> không?</p>
                     <small class="text-muted">Hành động này không thể hoàn tác.</small>
                 </div>
 
-                <!-- Footer -->
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <form action="{{ route('employee.destroy', 0) }}" id="delete-form" method="POST">
+                    <button type="button" class="btn btn-secondary off-modal" data-bs-dismiss="modal">Hủy</button>
+                    <form id="delete-form" method="POST">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-danger">Xóa</button>
+                        <button type="submit" class="btn btn-danger ">Xóa</button>
                     </form>
                 </div>
 
             </div>
         </div>
-    </div> --}}
+    </div>
 
-    {{-- Modal edit --}}
-    {{-- <div class="modal fade" id="employeeEdit" tabindex="-1" aria-labelledby="employeeEditLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header bg-secondary text-white">
-                    <h5 class="modal-title" id="employeeEditLabel">Chỉnh sửa Nhân Viên</h5>
-                    <button type="button" class="btn-close border-0 bg-secondary font-weight-bold text-white"
-                        data-bs-dismiss="modal" aria-label="Close">X</button>
-                </div>
-                <div class="modal-body">
-                    <form action="{{ route('employee.update', 0) }}" id="form-edit" method="post"
-                        enctype="multipart/form-data">
-                        @csrf
-                        @method('PUT')
-                        <div>
-                            <label class="form-label">Mã nhân viên:</label>
-                            <input type="text" name="id" id="employee-edit-id" class="form-control"
-                                placeholder="Nhập họ tên" required readonly>
-                            @error('name')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
-                        <div class="row g-3 mt-2">
-                            <div class="col-md-6">
-                                <label class="form-label">Họ tên nhân viên:</label>
-                                <input type="text" name="name" id="employee-edit-name" class="form-control"
-                                    placeholder="Nhập họ tên" required>
-                                @error('name')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Địa chỉ:</label>
-                                <input type="text" name="address" id="employee-edit-address" class="form-control"
-                                    placeholder="Nhập địa chỉ" required>
-                                @error('address')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="row g-3 mt-2">
-                            <div class="col-md-6">
-                                <label class="form-label">Số điện thoại:</label>
-                                <input type="text" name="phone" id="employee-edit-phone" class="form-control"
-                                    placeholder="Nhập số điện thoại" required>
-                                @error('phone')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Email:</label>
-                                <input type="email" name="email" id="employee-edit-email" class="form-control"
-                                    placeholder="Nhập email" required>
-                                @error('email')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="row g-3 mt-2">
-                            <div class="col-md-4">
-                                <label class="form-label">Giới tính:</label>
-                                <select name="gender" class="form-control" id="employee-edit-gender" required>
-                                    <option value="0">Nam</option>
-                                    <option value="1">Nữ</option>
-                                </select>
-                                @error('gender')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">Chức vụ:</label>
-                                <select name="position" id="employee-edit-position" class="form-control" required>
-                                    <option value="Nhân viên xưởng">Nhân viên xưởng</option>
-                                    <option value="Nhân viên quản lý">Nhân viên quản lý</option>
-                                    <option value="Nhân viên quản lý">Nhân viên sản xuất</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">Phòng ban:</label>
-                                <select name="department_id" id="employee-edit-department" class="form-control" required>
-                                    @foreach ($departments as $item)
-                                        <option value="{{ $item->id }}">{{ $item->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row mt-3">
-                            <!-- Input chọn ảnh -->
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Ảnh đại diện:</label>
-                                <input type="file" name="avatar" id="employee-edit-avatar" class="form-control"
-                                    accept="image/*" required id="avatar-input">
-                                @error('avatar')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
 
-                            <!-- Ảnh xem trước -->
-                            <div class="col-md-3 preview-img-item">
-                                <label class="form-label fw-semibold">Xem trước:</label>
-                                <div class="border rounded shadow-sm p-2 bg-light text-center">
-                                    <img id="avatar-preview" src="{{ asset('default-avatar.png') }}"
-                                        class="img-preview rounded" width="150" height="150">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mt-4 text-center">
-                            <input type="submit" class="btn btn-primary px-4" value="Cập nhật">
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div> --}}
 
     {{-- Modal Detail --}}
     {{-- <div class="modal fade" id="employeeDetail" tabindex="-1" aria-labelledby="employeeDetailLabel"
@@ -341,8 +228,8 @@
                         <div class="form-group">
                             <label for="time_out" class="col-sm-3 control-label text-nowrap">Ngày làm việc</label>
                             <div class="bootstrap-timepicker">
-                                <input type="date" class="form-control datepicker workday" id="workday" name="workday"
-                                    required>
+                                <input type="date" class="form-control datepicker workday" id="workday"
+                                    name="workday" required>
                             </div>
                         </div>
                         <div class="form-group d-none time-in-out time-in">
@@ -465,12 +352,31 @@
 
 @section('js')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    @if (Session::has('success'))
+    @if (Session::has('success') || Session::has('error'))
         <script src="{{ asset('js/message.js') }}"></script>
     @endif
 
     <script>
         $(document).ready(function() {
+            $('.off-modal').click(function() {
+                $('#scheduleDelete').modal('hide');
+            });
+
+            $('.btn-delete').click(function(e) {
+                e.preventDefault();
+                $('#scheduleDelete').modal('show');
+                var scheduleId = $(this).data('id');
+                var scheduleName = $(this).data('name');
+
+                // Hiển thị tên lịch trong modal
+                $('#schedule-name-delete').text(scheduleName);
+
+                // Cập nhật đường dẫn xóa trong form
+                var url = '{{ route('schedule-shift.destroy', ':id') }}';
+                url = url.replace(':id', scheduleId);
+                $('#delete-form').attr('action', url);
+            });
+
             $('.show-emp-list').click(function(e) {
                 e.preventDefault();
                 let empIds = $(this).data('id');
@@ -873,7 +779,6 @@
             });
         });
     </script>
-
 @endsection
 @else
 {{ abort(403, 'Bạn không có quyền truy cập trang này!') }}

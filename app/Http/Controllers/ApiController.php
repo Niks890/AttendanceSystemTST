@@ -19,9 +19,14 @@ class ApiController extends Controller
         ]);
     }
 
+<<<<<<< HEAD
+    public function employee($id) {
+        $employee = Employee::with('department', 'detailSchedules')->find($id);
+=======
     public function employee($id)
     {
         $employee = Employee::with('department')->find($id);
+>>>>>>> 4895627df2cb0c25c5d5d7affd8216bfec094b58
         return $this->apiStatus($employee, 200);
     }
 
@@ -63,6 +68,10 @@ class ApiController extends Controller
         return $this->apiStatus($employees, 200, count($employees));
     }
 
+<<<<<<< HEAD
+
+
+=======
     public function checkShift(Request $request)
     {
         $workday = $request->workday;
@@ -78,4 +87,5 @@ class ApiController extends Controller
             ->get();
         return $this->apiStatus($employees, 200, count($employees));
     }
+>>>>>>> 4895627df2cb0c25c5d5d7affd8216bfec094b58
 }
