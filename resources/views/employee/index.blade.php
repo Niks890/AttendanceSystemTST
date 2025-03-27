@@ -65,7 +65,8 @@
                     @foreach ($data as $model)
                         <tr class="text-dark">
                             <td>{{ $model->id }}</td>
-                            <td><img src="{{ asset('uploads/' . $model->avatar) }}" width="70px" height="70px" alt=""></td>
+                            <td><img src="{{ asset('uploads/' . $model->avatar) }}" width="70px" height="70px"
+                                    alt=""></td>
                             <td>{{ $model->name }}</td>
                             <td>{{ $model->address }}</td>
                             <td>{{ $model->phone }}</td>
@@ -108,7 +109,9 @@
                 <!-- Header -->
                 <div class="modal-header bg-danger text-white">
                     <h5 class="modal-title" id="employeeDeleteLabel">Xác nhận xóa nhân viên</h5>
-                    <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button"
+                        class="btn-close text-white off-modal bg-danger border-0 text-dark font-weight-bold"
+                        data-bs-dismiss="modal" aria-label="Close">X</button>
                 </div>
 
                 <!-- Body -->
@@ -119,11 +122,11 @@
 
                 <!-- Footer -->
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-secondary off-modal" data-bs-dismiss="modal">Hủy</button>
                     <form action="{{ route('employee.destroy', 0) }}" id="delete-form" method="POST">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-danger">Xóa</button>
+                        <button type="submit" class="btn btn-danger ">Xóa</button>
                     </form>
                 </div>
 
@@ -223,7 +226,8 @@
                                 <label class="form-label">Lịch làm việc:</label>
                                 <select name="schedule_id" id="employee-edit-schedule" class="form-control" required>
                                     @foreach ($schedules as $item)
-                                        <option value="{{ $item->id }}">{{ $item->name }} từ {{ $item->time_in }} đến {{ $item->time_out }}</option>
+                                        <option value="{{ $item->id }}">{{ $item->name }} từ {{ $item->time_in }}
+                                            đến {{ $item->time_out }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -370,6 +374,10 @@
 
     <script>
         $(document).ready(function() {
+
+            $('.off-modal').click(function() {
+                $('#employeeDelete').modal('hide');
+            });
             $(".btn-detail").click(function(event) {
                 event.preventDefault();
                 let row = $(this).closest("tr");
@@ -442,7 +450,8 @@
                         if (response.status_code === 200) {
                             let employeeInfo = response.data;
                             console.log(employeeInfo);
-                            $("#form-edit").attr("action", baseUpdateUrl.replace(':id', employeeInfo.id));
+                            $("#form-edit").attr("action", baseUpdateUrl.replace(':id',
+                                employeeInfo.id));
                             $("#employee-edit-id").val(employeeInfo.id);
                             $("#avatar-preview").attr("src", `uploads/${employeeInfo.avatar}`);
                             $("#employee-edit-name").val(employeeInfo.name);
@@ -452,7 +461,8 @@
                             $("#employee-edit-position").val(employeeInfo.position);
                             $("#employee-edit-gender").val(employeeInfo.gender);
                             $("#employee-edit-department").val(employeeInfo.department.id);
-                            $("#employee-edit-schedule").val(employeeInfo.detail_schedules[0].schedule_id);
+                            $("#employee-edit-schedule").val(employeeInfo.detail_schedules[0]
+                                .schedule_id);
                             $("#employeeEdit").modal("show");
                         } else {
                             alert("Không thể lấy dữ liệu chi tiết!");
