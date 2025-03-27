@@ -14,12 +14,12 @@ class AttendanceProduct extends Model
         'attendance_product_time',
         'KPI_done',
         'factory_id',
-        'schedule_id',
+        'employee_id',
     ];
 
-    public function schedule()
+    public function employee()
     {
-        return $this->belongsTo(Schedule::class);
+        return $this->belongsTo(Employee::class);
     }
 
     public function factory()

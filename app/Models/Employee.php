@@ -32,8 +32,13 @@ class Employee extends Model
         return $this->belongsTo(Department::class);
     }
 
-    public function leaves(){
+    public function leaves()
+    {
         return $this->hasMany(Leave::class);
+    }
+    public function attendanceProducts()
+    {
+        return $this->hasMany(AttendanceProduct::class);
     }
 
     public function lateTimes()
