@@ -120,7 +120,7 @@ class ExportController extends Controller
 
         // Ghi header
         $headerRow = WriterEntityFactory::createRowFromArray(
-            ['Ngày thực hiện', 'Mã số nhân viên', 'Họ và tên', 'Thời gian có mặt', 'Giờ Vào', 'Giờ Ra', 'Đánh giá'],
+            ['Ca Làm', 'Ngày thực hiện', 'Mã số nhân viên', 'Họ và tên', 'Thời gian có mặt', 'Giờ Vào', 'Giờ Ra', 'Đánh giá'],
             $headerStyle
         );
         $writer->addRow($headerRow);
@@ -132,7 +132,7 @@ class ExportController extends Controller
             ->join('attendances as a', 'e.id', '=', 'a.employee_id')
             ->whereColumn('ds.workday', 'a.attendance_date')
             ->where('ds.workday', $request->input('date'))
-            ->select('ds.workday', 'e.id as emp_id', 'e.name', 'a.attendance_time', 's.time_in', 's.time_out')
+            ->select('ds.workday', 'e.id as emp_id', 'e.name', 'a.attendance_time', 's.time_in', 's.time_out', 's.name as sche_name')
             ->get();
 
         $checkAttendance = "";
@@ -150,6 +150,7 @@ class ExportController extends Controller
                 $checkAttendance = "Trễ giờ";
             }
             $row = WriterEntityFactory::createRowFromArray([
+                $attendance->sche_name,
                 $attendance->workday,
                 $attendance->emp_id,
                 $attendance->name,

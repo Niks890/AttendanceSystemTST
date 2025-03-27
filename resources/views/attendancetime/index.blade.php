@@ -32,6 +32,7 @@
                         <table id="datatable-buttons" class="table table-bordered table-hover">
                             <thead class="thead-dark text-center">
                                 <tr>
+                                    <th>Ca Làm</th>
                                     <th>Ngày thực hiện</th>
                                     <th>Mã số nhân viên</th>
                                     <th>Họ và tên</th>
@@ -44,6 +45,7 @@
                             <tbody>
                                 @foreach ($attendances as $attendance)
                                     <tr>
+                                        <td class="text-center">{{ $attendance->sche_name }}</td>
                                         <td class="text-center">{{ $attendance->workday }}</td>
                                         <td class="text-center">{{ $attendance->emp_id }}</td>
                                         <td>{{ $attendance->name }}</td>
@@ -101,6 +103,10 @@
                         <table class="table table-bordered align-middle">
                             <tbody>
                                 <tr>
+                                    <td class="fw-bold text-start">Ca làm:</td>
+                                    <td><span id="attendance-schedule"></span></td>
+                                </tr>
+                                <tr>
                                     <td class="fw-bold text-start">Ngày thực hiện:</td>
                                     <td><span id="attendance-workday"></span></td>
                                 </tr>
@@ -149,17 +155,18 @@
             document.querySelectorAll(".btn-detail").forEach(button => {
                 button.addEventListener("click", function() {
                     let row = this.closest("tr");
-
-                    document.getElementById("attendance-workday").innerText = row.cells[0]
-                    .innerText;
-                    document.getElementById("employee-id").innerText = row.cells[1].innerText;
-                    document.getElementById("employee-name").innerText = row.cells[2].innerText;
-                    document.getElementById("attendance-time").innerText = row.cells[3].innerText;
-                    document.getElementById("time-in").innerText = row.cells[4].innerText;
-                    document.getElementById("time-out").innerText = row.cells[5].innerText;
+                    document.getElementById("attendance-schedule").innerText = row.cells[0]
+                        .innerText;
+                    document.getElementById("attendance-workday").innerText = row.cells[1]
+                        .innerText;
+                    document.getElementById("employee-id").innerText = row.cells[2].innerText;
+                    document.getElementById("employee-name").innerText = row.cells[3].innerText;
+                    document.getElementById("attendance-time").innerText = row.cells[4].innerText;
+                    document.getElementById("time-in").innerText = row.cells[5].innerText;
+                    document.getElementById("time-out").innerText = row.cells[6].innerText;
 
                     let statusElement = document.getElementById("attendance-status");
-                    let statusBadge = row.cells[3].querySelector(".badge");
+                    let statusBadge = row.cells[4].querySelector(".badge");
                     if (statusBadge) {
                         statusElement.innerText = statusBadge.innerText;
                         statusElement.className = statusBadge.className;
