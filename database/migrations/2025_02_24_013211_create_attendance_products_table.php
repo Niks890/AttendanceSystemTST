@@ -17,8 +17,8 @@ return new class extends Migration
             $table->datetime('attendance_product_time')->nullable();
             $table->unsignedInteger('KPI_done')->nullable();
             $table->unsignedInteger('factory_id');
-            $table->unsignedInteger('schedule_id');
-            $table->foreign('schedule_id')->references('id')->on('schedules');
+            $table->unsignedInteger('employee_id');
+            $table->foreign('employee_id')->references('id')->on('employees');
             $table->foreign('factory_id')->references('id')->on('factories');
             $table->timestamps();
         });

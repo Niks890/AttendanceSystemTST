@@ -10,18 +10,14 @@ class Schedule extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 
-        'time_in', 
-        'time_out', 
+        'name',
+        'time_in',
+        'time_out',
         'slug'
     ];
 
     public function detailSchedules()
     {
         return $this->hasMany(DetailSchedule::class);
-    }
-
-    public function attendanceProducts() {
-        return $this->hasMany(AttendanceProduct::class);
     }
 }
