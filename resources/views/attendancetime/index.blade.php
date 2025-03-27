@@ -11,14 +11,19 @@
                 <h4 class="mb-0 text-center">Bảng Chấm Công Nhân Viên Theo Thời Gian</h4>
                 <div class="card-body">
                     {{-- Bộ lọc theo ngày --}}
-                    <form method="GET" action="" class="mb-4">
+                    <form method="GET" action="{{ route('attendance-time.index') }}" class="mb-4">
                         <div class="form-row align-items-center justify-content-center">
                             <div class="col-auto">
                                 <input type="date" id="filter_date" name="filter_date" class="form-control"
-                                    value="{{ request('filter_date') }}">
+                                    value="{{ request('filter_date') ?? now()->format('Y-m-d') }}">
                             </div>
                             <div class="col-auto">
-                                <button type="submit" class="btn btn-primary">Lọc</button>
+                                <input type="submit" class="btn btn-primary" value="Lọc">
+                            </div>
+                            <div class="col-auto">
+                                <a href="javascript:void(0)" id="export-excel" class="btn btn-success">Xuất
+                                    file
+                                    Excel <i class="fa fa-print"></i></a>
                             </div>
                         </div>
                     </form>
@@ -33,8 +38,6 @@
                                     <th>Thời gian có mặt</th>
                                     <th>Time In</th>
                                     <th>Time Out</th>
-                                    <th>Xác nhận của Phòng ban</th>
-                                    <th>Xác nhận của Nhân viên</th>
                                     <th>Hành động</th>
                                 </tr>
                             </thead>
@@ -64,8 +67,6 @@
                                             {{ $attendance->time_in }}</td>
                                         <td class="text-center">
                                             {{ $attendance->time_out }}</td>
-                                        <td class="text-center"><i class="fa fa-check text-success"></i></td>
-                                        <td class="text-center"><i class="fa fa-times text-danger"></i></td>
                                         <td class="text-center">
                                             <a href="">Xem chi tiết</a>
                                         </td>
@@ -80,4 +81,16 @@
         </div>
     </div>
 
+@endsection
+
+@section('js')
+    <script>
+        $(document).ready(function() {
+            $('#export-excel').click(function(e) {
+                e.preventDefault();
+                var date = $('#filter_date').val();
+                window.location.href = '/export-excel-attendance?date=' + date;
+            })
+        })
+    </script>
 @endsection
