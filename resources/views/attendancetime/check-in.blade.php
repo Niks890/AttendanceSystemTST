@@ -9,7 +9,7 @@
 @section('content')
     <h2>Lịch Điểm Danh</h2>
     <h3 class="text-dark" id="current-date"></h3>
-    <h6 class="text-dark font-italic mb-2">(Vui lòng tiến hành điểm danh trước 15 phút so với giờ làm việc thực tế, nếu không sẽ bị tính là trễ giờ)</h6>
+    <h6 class="text-dark font-italic mb-2">(Vui lòng tiến hành điểm danh trong vòng 15 phút kể từ thời gian bắt đầu ca làm việc, nếu không sẽ bị tính là trễ giờ)</h6>
     <div class="calendar" id="calendar"></div>
 
     <!-- Modal Xác Nhận -->

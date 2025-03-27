@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AttendanceProduct;
 use Box\Spout\Writer\Common\Creator\WriterEntityFactory;
 use Box\Spout\Common\Entity\Style\Style;
 use App\Models\Employee;
@@ -158,6 +159,61 @@ class ExportController extends Controller
                 $attendance->time_in,
                 $attendance->time_out,
                 $checkAttendance
+            ]);
+            $writer->addRow($row);
+        }
+
+        // Đóng file Excel
+        $writer->close();
+    }
+
+    public function exportExcelAttendanceProduct(Request $request)
+    {
+        $fileName = 'attendance_product_' . $request->input('date') . '.xlsx';
+
+        // Tạo writer để ghi file Excel
+        $writer = WriterEntityFactory::createXLSXWriter();
+        $writer->openToBrowser($fileName);
+
+        // Style cho header
+        $headerStyle = (new Style())->setFontSize(12);
+
+        // Ghi header
+        $headerRow = WriterEntityFactory::createRowFromArray(
+            ['Ngày thực hiện', 'Mã số nhân viên', 'Chức vụ', 'Họ và tên', 'Ca làm việc', 'KPI', 'Số lượng hoàn thành', 'Đánh giá', 'Xưởng'],
+            $headerStyle
+        );
+        $writer->addRow($headerRow);
+
+        // Lấy dữ liệu lịch làm việc từ database
+        $attendanceData = AttendanceProduct::select(
+            'attendance_products.attendance_product_time',
+            'employees.id as employee_id',
+            'employees.name as employee_name',
+            'employees.position',
+            'schedules.name as schedule_name',
+            'detail_schedules.KPI',
+            'attendance_products.KPI_done',
+            'attendance_products.status',
+            'factories.name as factory_name'
+        )
+        ->join('factories', 'factories.id', '=', 'attendance_products.factory_id')
+        ->join('employees', 'employees.id', '=', 'attendance_products.employee_id')
+        ->join('detail_schedules', 'detail_schedules.employee_id', '=', 'employees.id')
+        ->join('schedules', 'schedules.id', '=', 'detail_schedules.schedule_id')
+        ->get();
+
+        foreach ($attendanceData as $attendance) {
+            $row = WriterEntityFactory::createRowFromArray([
+                $attendance->attendance_product_time,
+                $attendance->employee_id,
+                $attendance->position,
+                $attendance->employee_name,
+                $attendance->schedule_name,
+                $attendance->KPI,
+                $attendance->KPI_done,
+                $attendance->status == 0 ? 'Chưa hoàn thành' : 'Hoàn thành',
+                $attendance->factory_name,
             ]);
             $writer->addRow($row);
         }

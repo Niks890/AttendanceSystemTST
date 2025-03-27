@@ -14,14 +14,11 @@
         <div class="mt-5">
             <p class="text-dark font-weight-bold">Nếu không có máy quét, hãy thử:</p>
             <h4>Nạp dữ liệu từ file JSON</h4>
-            <form class="d-flex align-items-center justify-content-center"
-                action="{{ route('scanner-attendance.upload-json') }}" method="POST" enctype="multipart/form-data">
+            <form id="uploadJsonForm" class="d-flex align-items-center justify-content-center"
+                enctype="multipart/form-data">
                 @csrf
                 <div class="form-group">
-                    <input type="file" name="json_file" class="form-control-file" required>
-                    @error('json_file')
-                        <span class="text-danger">{{ $message }}</span>
-                    @enderror
+                    <input type="file" id="jsonFile" name="json_file" class="form-control-file" required>
                 </div>
                 <button type="submit" class="btn btn-success">Nạp dữ liệu giả (JSON)</button>
             </form>
@@ -62,12 +59,28 @@
             </form>
         </div>
     </div>
+
+    <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Nạp Dữ Liệu Thành Công</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <ul id="employeeList" class="list-group"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('js')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.10.2/lottie.min.js"></script>
     <script>
-        // Load animation
         lottie.loadAnimation({
             container: document.getElementById('uploadAnimation'),
             renderer: 'svg',
@@ -76,7 +89,6 @@
             path: '{{ asset('img/scanner-animation.json') }}'
         });
 
-        // Mở modal khi click "Nạp dữ liệu"
         document.getElementById('openScannerModal').addEventListener('click', function() {
             $('#scannerModal').modal('show');
         });
@@ -91,5 +103,40 @@
             }
         });
     </script>
+    <script>
+        $(document).ready(function() {
+            $('#uploadJsonForm').on('submit', function(e) {
+                e.preventDefault();
+                let formData = new FormData(this);
 
+                $.ajax({
+                    url: "{{ route('scanner-attendance.upload-json') }}",
+                    type: "POST",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        if (response.success) {
+                            $('#employeeList').empty();
+                            response.employees.forEach(emp => {
+                                $('#employeeList').append(
+                                    `<li class="list-group-item d-flex justify-content-between align-items-center">
+                                Nhân viên ID: ${emp.employee_id} - ${emp.time}
+                                <span class="text-success font-weight-bold">✔</span>
+                            </li>`
+                                );
+                            });
+
+                            $('#successModal').modal('show');
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function() {
+                        alert("Lỗi khi nạp dữ liệu!");
+                    }
+                });
+            });
+        });
+    </script>
 @endsection
