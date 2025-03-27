@@ -9,6 +9,13 @@
             <i class="fas fa-check p-2 bg-success text-white rounded-circle pe-2 mx-2"></i>{{ Session::get('success') }}
         </div>
     @endif
+    {{-- @if (Session::has('success'))
+        <div class='alert alert-success alert-dismissible'>
+            <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>
+            <h4><i class='icon fa fa-check'></i> Success!</h4>
+            {{ Session::has('success') }}
+        </div>
+    @endif --}}
 
     @if (Session::has('error'))
         <div class="shadow-lg p-2 move-from-top js-div-dissappear" style="width: 18rem; display:flex; text-align:center">
@@ -75,10 +82,6 @@
                                     class="btn btn-sm btn-warning">
                                     <i class="fa fa-print"></i> In
                                 </a>
-                                <button type="button" class="btn btn-sm btn-primary btn-detail">
-                                    <i class="fa fa-eye"></i> Xem chi tiết
-                                </button>
-
                                 <a href="javascript:void(0);" class="btn btn-sm btn-danger btn-delete"
                                     data-id="{{ $model->id }}" data-name="{{ $model->sche_name }}"
                                     data-bs-toggle="modal" data-bs-target="#scheduleDelete">
@@ -128,80 +131,7 @@
 
 
 
-    {{-- Modal Detail --}}
-    {{-- <div class="modal fade" id="employeeDetail" tabindex="-1" aria-labelledby="employeeDetailLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
 
-                <div class="modal-header bg-secondary text-white">
-                    <h5 class="modal-title" id="employeeDetailLabel">Thông tin nhân viên: <span
-                            id="employee-info"></span></h5>
-                    <button type="button" class="btn-close border-0 bg-secondary font-weight-bold text-white"
-                        data-bs-dismiss="modal" aria-label="Close">X</button>
-                </div>
-
-                <div class="modal-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered align-middle">
-                            <tbody>
-                                <tr>
-                                    <td class="fw-bold text-start" style="width: 30%;">Mã nhân viên:</td>
-                                    <td style="width: 70%;"><span id="employee-id"></span></td>
-                                </tr>
-                                <tr>
-                                    <td class="fw-bold text-start" style="width: 30%;">Avatar:</td>
-                                    <td style="width: 70%;"><img src="" id="employee-avatar" width="50px"
-                                            alt=""></td>
-                                </tr>
-                                <tr>
-                                    <td class="fw-bold text-start" style="width: 30%;">Họ tên:</td>
-                                    <td style="width: 70%;"><span id="employee-name"></span></td>
-                                </tr>
-                                <tr>
-                                    <td class="fw-bold text-start" style="width: 30%;">Email</td>
-                                    <td style="width: 70%;"><span id="employee-email"></span></td>
-                                </tr>
-                                <tr>
-                                    <td class="fw-bold text-start" style="width: 30%;">Số điện thoại:</td>
-                                    <td style="width: 70%;"><span id="employee-phone"></span></td>
-                                </tr>
-                                <tr>
-                                    <td class="fw-bold text-start" style="width: 30%;">Địa chỉ:</td>
-                                    <td style="width: 70%;"><span id="employee-address"></span></td>
-                                </tr>
-                                <tr>
-                                    <td class="fw-bold text-start" style="width: 30%;">Giới tính:</td>
-                                    <td style="width: 70%;"><span id="employee-gender"></span></td>
-                                </tr>
-                                <tr>
-                                    <td class="fw-bold text-start" style="width: 30%;">Chức vụ:</td>
-                                    <td style="width: 70%;"><span id="employee-position"></span></td>
-                                </tr>
-                                <tr>
-                                    <td class="fw-bold text-start" style="width: 30%;">Nơi làm việc:</td>
-                                    <td style="width: 70%;"><span id="department-name"></span></td>
-                                </tr>
-                                <tr>
-                                    <td class="fw-bold text-start" style="width: 30%;">Ngày tạo:</td>
-                                    <td style="width: 70%;"><span id="employee-created"></span></td>
-                                </tr>
-                                <tr>
-                                    <td class="fw-bold text-start" style="width: 30%;">Ngày sửa:</td>
-                                    <td style="width: 70%;"><span id="employee-updated"></span></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <!-- Modal footer -->
-                    <div class="modal-footer d-flex justify-content-center">
-                        <button type="button" class="btn btn-secondary btn-close" data-bs-dismiss="modal">Đóng</button>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div> --}}
 
     {{-- Modal Add Schedule Shift --}}
     <div class="modal fade" id="addnew">
@@ -587,8 +517,8 @@
                             console.log(employeeHasShift);
 
                             // Tách chuỗi thành mảng
-                            const idsArray = listEmp[0].emp_ids.split(',');
-                            const namesArray = listEmp[0].emp_names.split(',');
+                            const idsArray = (listEmp[0].emp_ids || "").split(',');
+                            const namesArray = (listEmp[0].emp_names || "").split(',');
 
                             // Các ID cần loại bỏ
                             const removeIds = employeeHasShift;

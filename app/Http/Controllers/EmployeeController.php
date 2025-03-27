@@ -39,11 +39,8 @@ class EmployeeController extends Controller
         // dd($data);
 
         $departments = Department::all();
-        $schedules = DB::table('schedules as s')
-            ->join('detail_schedules as ds', 's.id', '=', 'ds.schedule_id')
-            ->get();
         // dd($schedules);
-        return view('employee.index', compact('data', 'departments', 'schedules'));
+        return view('employee.index', compact('data', 'departments'));
     }
 
     /**
@@ -242,8 +239,9 @@ class EmployeeController extends Controller
         $employee = Employee::find(auth()->user()->id - 1);
         // dd($employee);
         return view('employee.profile', compact('employee'));
+        $user = User::find(auth()->id());
+        $employee = Employee::where('email', $user->email)->first();
     }
-
     public function update_profile(Request $request)
     {
         // Lấy employee của user đang đăng nhập

@@ -49,4 +49,5 @@ Route::group(['prefix' => '', 'middleware' => 'auth'], function () {
 
     Route::get('/export-excel', [ExportController::class, 'exportExcelEmployee'])->name('export.excel');
     Route::get('/export-excel-schedule/{id}', [ExportController::class, 'exportExcelSchedule'])->name('export.exportExcelSchedule');
+    Route::get('/export-excel-attendance', [ExportController::class, 'exportExcelAttendance'])->name('export.exportExcelAttendance');
 });
