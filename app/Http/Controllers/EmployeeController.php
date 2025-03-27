@@ -8,7 +8,6 @@ use App\Models\Employee;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 
 class EmployeeController extends Controller
@@ -119,7 +118,11 @@ class EmployeeController extends Controller
         }
         $user->remember_token = Str::random(10);
         $user->email_verified_at = now();
-        $user->save();
+        if ($user instanceof User) {
+            $user->save();
+        } else {
+            abort(500, 'User instance not found');
+        }
 
         return redirect()->route('employee.index')->with('success', 'Thêm nhân viên mới thành công');
     }
