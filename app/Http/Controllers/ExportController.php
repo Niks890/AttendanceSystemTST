@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use Box\Spout\Writer\Common\Creator\WriterEntityFactory;
 use Box\Spout\Common\Entity\Style\Style;
 use App\Models\Employee;
+use Carbon\Carbon;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
+
 
 class ExportController extends Controller
 {
@@ -94,6 +97,66 @@ class ExportController extends Controller
                 $schedule->time_out,
                 $schedule->KPI,
                 $schedule->department_name,
+            ]);
+            $writer->addRow($row);
+        }
+
+        // Đóng file Excel
+        $writer->close();
+    }
+
+
+    public function exportExcelAttendance(Request $request)
+    {
+
+        $fileName = 'schedule_' . $request->input('date') . '.xlsx';
+
+        // Tạo writer để ghi file Excel
+        $writer = WriterEntityFactory::createXLSXWriter();
+        $writer->openToBrowser($fileName);
+
+        // Style cho header
+        $headerStyle = (new Style())->setFontSize(12);
+
+        // Ghi header
+        $headerRow = WriterEntityFactory::createRowFromArray(
+            ['Ngày thực hiện', 'Mã số nhân viên', 'Họ và tên', 'Thời gian có mặt', 'Giờ Vào', 'Giờ Ra', 'Đánh giá'],
+            $headerStyle
+        );
+        $writer->addRow($headerRow);
+
+        // Lấy dữ liệu lịch làm việc từ database
+        $attendances = DB::table('detail_schedules as ds')
+            ->join('schedules as s', 's.id', '=', 'ds.schedule_id')
+            ->join('employees as e', 'ds.employee_id', '=', 'e.id')
+            ->join('attendances as a', 'e.id', '=', 'a.employee_id')
+            ->whereColumn('ds.workday', 'a.attendance_date')
+            ->where('ds.workday', $request->input('date'))
+            ->select('ds.workday', 'e.id as emp_id', 'e.name', 'a.attendance_time', 's.time_in', 's.time_out')
+            ->get();
+
+        $checkAttendance = "";
+
+        foreach ($attendances as $attendance) {
+            $time1 = Carbon::createFromFormat(
+                'H:i:s',
+                $attendance->attendance_time,
+            );
+            $time2 = Carbon::createFromFormat('H:i:s', $attendance->time_in);
+            $diffInMinutes = $time1->diffInMinutes($time2);
+            if ($diffInMinutes <= 15) {
+                $checkAttendance = "Đúng giờ";
+            } else {
+                $checkAttendance = "Trễ giờ";
+            }
+            $row = WriterEntityFactory::createRowFromArray([
+                $attendance->workday,
+                $attendance->emp_id,
+                $attendance->name,
+                $attendance->attendance_time,
+                $attendance->time_in,
+                $attendance->time_out,
+                $checkAttendance
             ]);
             $writer->addRow($row);
         }

@@ -59,7 +59,6 @@
                         <th class="scope">SĐT</th>
                         <th class="scope">Giới tính</th>
                         <th class="scope">Chức vụ</th>
-                        <th class="scope">Lịch làm việc</th>
                         <th class="scope text-center">Hành động</th>
                     </tr>
                     @foreach ($data as $model)
@@ -72,13 +71,6 @@
                             <td>{{ $model->phone }}</td>
                             <td>{{ $model->gender == 0 ? 'Nam' : 'Nữ' }}</td>
                             <td>{{ $model->position }}</td>
-                            <td>
-                                @if ($model->detail_schedule_id == null)
-                                    Nhân viên chưa được phân công
-                                @else
-                                    {{ $model->schedule_name }} từ {{ $model->time_in }} đến {{ $model->time_out }}
-                                @endif
-                            </td>
                             <td class="text-center">
                                 <button type="button" class="btn btn-sm btn-warning btn-edit"
                                     data-id="{{ $model->id }}">
@@ -219,15 +211,6 @@
                                 <select name="department_id" id="employee-edit-department" class="form-control" required>
                                     @foreach ($departments as $item)
                                         <option value="{{ $item->id }}">{{ $item->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Lịch làm việc:</label>
-                                <select name="schedule_id" id="employee-edit-schedule" class="form-control" required>
-                                    @foreach ($schedules as $item)
-                                        <option value="{{ $item->id }}">{{ $item->name }} từ {{ $item->time_in }}
-                                            đến {{ $item->time_out }}</option>
                                     @endforeach
                                 </select>
                             </div>

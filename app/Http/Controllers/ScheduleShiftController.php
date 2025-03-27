@@ -36,8 +36,8 @@ class ScheduleShiftController extends Controller
                 DB::raw('GROUP_CONCAT(DISTINCT employees.id) AS emp_ids'),
                 DB::raw('GROUP_CONCAT(DISTINCT employees.name) AS emp_names')
             )
-            ->join('detail_schedules', 'employees.id', '=', 'detail_schedules.employee_id')
-            ->join('schedules', 'detail_schedules.schedule_id', '=', 'schedules.id')
+            ->leftJoin('detail_schedules', 'employees.id', '=', 'detail_schedules.employee_id')
+            ->leftJoin('schedules', 'detail_schedules.schedule_id', '=', 'schedules.id')
             ->get();
 
 
