@@ -68,14 +68,17 @@ class ApiController extends Controller
         $workday = $request->workday;
         $timeIn = $request->time_in;
         $timeOut = $request->time_out;
-        $employees = DB::table('employees')
-            ->join('detail_schedules', 'employees.id', '=', 'detail_schedules.employee_id')
+        $employees = Employee::join('detail_schedules', 'employees.id', '=', 'detail_schedules.employee_id')
             ->join('schedules', 'detail_schedules.schedule_id', '=', 'schedules.id')
             ->whereDate('detail_schedules.workday', $workday)
-            ->where('schedules.time_in', $timeIn)
-            ->where('schedules.time_out', $timeOut)
+            ->whereBetween(DB::raw("'$timeIn'"), [DB::raw('schedules.time_in'), DB::raw('schedules.time_out')])
+            ->whereBetween(DB::raw("'$timeOut'"), [DB::raw('schedules.time_in'), DB::raw('schedules.time_out')])
             ->select('employees.id', 'employees.name', 'detail_schedules.workday', 'schedules.time_in', 'schedules.time_out')
             ->get();
-        return $this->apiStatus($employees, 200, count($employees));
+        if ($employees->count() == 0) {
+            return $this->apiStatus($employees, 200, count($employees));
+        } else {
+            return $this->apiStatus($employees, 400, count($employees), message: 'Lịch đã bị chiếm dụng.');
+        }
     }
 }
