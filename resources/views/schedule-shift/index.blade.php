@@ -480,11 +480,6 @@
                 } else {
                     $('.time-in-out').addClass('d-none');
                 }
-                // let timeIn = $('.time_in').val();
-                // let timeOut = $('.time_out').val();
-                // if (timeIn && timeOut && workday) {
-                //     console.log(timeIn, timeOut, workday);
-                // }
                 $('.time-in-out').on('change', function() {
                     let timeIn = $('#time_in').val();
                     let timeOut = $('#time_out').val();
@@ -509,11 +504,7 @@
                                 employeeHasShift.push(employee.id.toString());
                                 // console.log(employee)
                             })
-                            // let listEmpId = listEmp[0].emp_ids.split(',').map((id) =>
-                            //     parseInt(id));
-                            // const result = listEmpId.filter(item => !employeeHasShift
-                            //     .includes(item));
-                            // console.log(employeeHasShift, listEmpId, result);
+
                             console.log(employeeHasShift);
 
                             // Tách chuỗi thành mảng

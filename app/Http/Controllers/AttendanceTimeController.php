@@ -65,7 +65,7 @@ class AttendanceTimeController extends Controller
             'employee_id' => Auth::guard('web')->id() - 1,
             'attendance_date' => $request->attendance_date,
             'attendance_time' => $request->attendance_time,
-            'status' => false,
+            'status' => true,
             'type' => true
         ]);
         return response()->json(['success' => true]);
