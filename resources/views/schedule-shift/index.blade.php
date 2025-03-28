@@ -158,8 +158,8 @@
                         <div class="form-group">
                             <label for="time_out" class="col-sm-3 control-label text-nowrap">Ngày làm việc</label>
                             <div class="bootstrap-timepicker">
-                                <input type="date" class="form-control datepicker workday" id="workday"
-                                    name="workday" required>
+                                <input type="date" min="{{ now()->format('Y-m-d') }}"
+                                    class="form-control datepicker workday" id="workday" name="workday" required>
                             </div>
                         </div>
                         <div class="form-group d-none time-in-out time-in">
