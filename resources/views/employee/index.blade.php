@@ -444,8 +444,6 @@
                             $("#employee-edit-position").val(employeeInfo.position);
                             $("#employee-edit-gender").val(employeeInfo.gender);
                             $("#employee-edit-department").val(employeeInfo.department.id);
-                            $("#employee-edit-schedule").val(employeeInfo.detail_schedules[0]
-                                .schedule_id);
                             $("#employeeEdit").modal("show");
                         } else {
                             alert("Không thể lấy dữ liệu chi tiết!");

@@ -18,7 +18,8 @@
                 enctype="multipart/form-data">
                 @csrf
                 <div class="form-group">
-                    <input type="file" id="jsonFile" name="json_file" class="form-control-file" required>
+                    <input type="file" id="jsonFile" name="json_file" class="form-control-file"
+                        accept="application/json" required>
                 </div>
                 <button type="submit" class="btn btn-success">Nạp dữ liệu giả (JSON)</button>
             </form>
