@@ -31,7 +31,7 @@ Below is the conceptual data model (CDM) for the system:
 | `attendance_id`           | INT (PK)  | Unique identifier for attendance     |
 | `attendance_date`         | DATE      | Date of attendance                   |
 | `attendance_time`         | TIME      | Time of attendance                   |
-| `attendance_product_status` | VARCHAR | Status of product-related attendance |
+| `attendance_status`       | VARCHAR   | Status of check-in/out               |
 | `attendance_type`         | VARCHAR   | Type of attendance                   |
 
 ### 📦 3. Attendance Products (`attendance_products`)
@@ -55,25 +55,25 @@ Below is the conceptual data model (CDM) for the system:
 | 🆔 Column Name         | 🗄️ Data Type  | 📌 Description                 |
 |---------------------|-----------|-----------------------------|
 | `overtime_id`      | INT (PK)  | Unique identifier           |
-| `overtime_duration`| INT       | Duration in hours           |
+| `overtime_duration`| TIME      | Duration in hours           |
 | `overtime_date`    | DATE      | Date of overtime            |
-| `attendance_type`  | VARCHAR   | Type of attendance          |
+| `overtime_type`    | VARCHAR   | Type of overtime            |
 
 ### ⏰ 6. Late Times (`latetimes`)
 | 🆔 Column Name         | 🗄️ Data Type  | 📌 Description                |
 |---------------------|-----------|----------------------------|
 | `latetime_id`      | INT (PK)  | Unique identifier          |
-| `overtime_duration`| INT       | Extra hours due to lateness|
+| `latetime_duration`| TIME      | Duration in minutes        |
 | `latetime_date`    | DATE      | Date of late attendance    |
-| `attendance_type`  | VARCHAR   | Type of attendance         |
+| `latetime_type`    | VARCHAR   | Type of late               |
 
 ### 🚪 7. Leave Times (`leavetimes`)
 | 🆔 Column Name          | 🗄️ Data Type  | 📌 Description            |
 |----------------------|-----------|------------------------|
 | `leavetime_id`      | INT (PK)  | Unique identifier      |
-| `leavetime_duration`| INT       | Duration of leave      |
+| `leavetime_duration`| TIME      | Duration of leave      |
 | `leavetime_date`    | DATE      | Date of leave          |
-| `attendance_product_stat` | VARCHAR | Leave status        |
+| `leavetime_status`  | VARCHAR   | Leave status           |
 
 ## ⚡ TCP Socket Integration
 - The system integrates **TCP Socket communication** to receive real-time attendance data from biometric devices.
