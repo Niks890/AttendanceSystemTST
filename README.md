@@ -101,15 +101,17 @@ Below is the conceptual data model (CDM) for the system:
 2. Install dependencies:
    ```sh
    composer install
-   npm install
    ```
 3. Configure the `.env` file and set up the database.
-4. Run migrations to create database tables:
-   ```sh
-   php artisan migrate
-   php artisan db:seed
+    ```sh
+   cp .env.example .env
+   php artisan key:generate
    ```
-5. Start the development server:
+5. Run migrations to create database tables:
+   ```sh
+   php artisan migrate --seed
+   ```
+6. Start the development server:
    ```sh
    php artisan serve
    ```
