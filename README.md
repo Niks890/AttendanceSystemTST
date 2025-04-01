@@ -1,66 +1,115 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 📌 Attendance Management System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## 📝 Introduction
+This project is an attendance management system designed for enterprises to track working hours, shifts, overtime, and employee-related data. The system efficiently manages employee information, work schedules, attendance, overtime, and leave records. Additionally, it utilizes **⚡ TCP Socket** to collect attendance data from biometric devices.
 
-## About Laravel
+## 🏗️ Main Components
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### 📌 Conceptual Data Model (CDM)
+Below is the conceptual data model (CDM) for the system:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+![CDM Diagram](public/images/cdm-diagram.png)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 👨‍💼 1. Employees (`employees`)
+| 🆔 Column Name            | 🗄️ Data Type  | 📌 Description                       |
+|------------------------|-----------|-----------------------------------|
+| `employee_id`         | INT (PK)  | Unique identifier for employees  |
+| `factory_name`        | VARCHAR   | Factory name of the employee     |
+| `employee_avatar`     | VARCHAR   | Profile picture of the employee  |
+| `employee_email`      | VARCHAR   | Email address                    |
+| `employee_position`   | VARCHAR   | Job position                     |
+| `employee_gender`     | VARCHAR   | Gender                           |
+| `employee_phone`      | VARCHAR   | Contact number                   |
+| `employee_address`    | TEXT      | Address                          |
+| `employee_permission` | VARCHAR   | User permission level            |
+| `employee_username`   | VARCHAR   | Username for login               |
+| `employee_password`   | VARCHAR   | Encrypted password               |
 
-## Learning Laravel
+### 🕒 2. Attendance (`attendances`)
+| 🆔 Column Name                | 🗄️ Data Type  | 📌 Description                           |
+|----------------------------|-----------|---------------------------------------|
+| `attendance_id`           | INT (PK)  | Unique identifier for attendance     |
+| `attendance_date`         | DATE      | Date of attendance                   |
+| `attendance_time`         | TIME      | Time of attendance                   |
+| `attendance_product_status` | VARCHAR | Status of product-related attendance |
+| `attendance_type`         | VARCHAR   | Type of attendance                   |
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 📦 3. Attendance Products (`attendance_products`)
+| 🆔 Column Name                         | 🗄️ Data Type  | 📌 Description                        |
+|-------------------------------------|-----------|------------------------------------|
+| `attendance_product_id`            | INT (PK)  | Unique identifier                  |
+| `attendance_product_status`        | VARCHAR   | Status of attendance product       |
+| `attendance_product_time`          | TIME      | Time logged for product attendance |
+| `attendance_product_KPI_done`      | INT       | KPI completed status               |
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### 📅 4. Work Schedules (`schedules`)
+| 🆔 Column Name          | 🗄️ Data Type  | 📌 Description             |
+|----------------------|-----------|-------------------------|
+| `schedule_id`       | INT (PK)  | Unique schedule ID      |
+| `schedule_name`     | VARCHAR   | Name of the schedule    |
+| `schedule_time_in`  | TIME      | Start time              |
+| `schedule_time_out` | TIME      | End time                |
+| `schedule_slug`     | VARCHAR   | URL-friendly identifier |
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### ⏳ 5. Overtime (`overtimes`)
+| 🆔 Column Name         | 🗄️ Data Type  | 📌 Description                 |
+|---------------------|-----------|-----------------------------|
+| `overtime_id`      | INT (PK)  | Unique identifier           |
+| `overtime_duration`| INT       | Duration in hours           |
+| `overtime_date`    | DATE      | Date of overtime            |
+| `attendance_type`  | VARCHAR   | Type of attendance          |
 
-## Laravel Sponsors
+### ⏰ 6. Late Times (`latetimes`)
+| 🆔 Column Name         | 🗄️ Data Type  | 📌 Description                |
+|---------------------|-----------|----------------------------|
+| `latetime_id`      | INT (PK)  | Unique identifier          |
+| `overtime_duration`| INT       | Extra hours due to lateness|
+| `latetime_date`    | DATE      | Date of late attendance    |
+| `attendance_type`  | VARCHAR   | Type of attendance         |
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+### 🚪 7. Leave Times (`leavetimes`)
+| 🆔 Column Name          | 🗄️ Data Type  | 📌 Description            |
+|----------------------|-----------|------------------------|
+| `leavetime_id`      | INT (PK)  | Unique identifier      |
+| `leavetime_duration`| INT       | Duration of leave      |
+| `leavetime_date`    | DATE      | Date of leave          |
+| `attendance_product_stat` | VARCHAR | Leave status        |
 
-### Premium Partners
+## ⚡ TCP Socket Integration
+- The system integrates **TCP Socket communication** to receive real-time attendance data from biometric devices.
+- The attendance records are automatically stored in the database upon receiving data from the device.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+## 🔗 Relationships Between Components
+- Each employee belongs to a department and works in a factory.
+- Each employee can have multiple attendance, overtime, late time, or leave time records.
+- Each work schedule can have multiple schedule details.
 
-## Contributing
+## 🛠️ Technologies Used
+- **Backend:** Laravel 10, PHP 8
+- **Database:** MySQL
+- **Frontend:** JQuery, Bootstrap
+- **Communication Protocol:** TCP Socket for biometric device data transfer
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## 🚀 Installation Guide
+1. Clone the repository:
+   ```sh
+   git clone https://github.com/Niks890/AttendanceSystemTST.git
+   ```
+2. Install dependencies:
+   ```sh
+   composer install
+   npm install
+   ```
+3. Configure the `.env` file and set up the database.
+4. Run migrations to create database tables:
+   ```sh
+   php artisan migrate
+   php artisan db:seed
+   ```
+5. Start the development server:
+   ```sh
+   php artisan serve
+   ```
 
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## 🤝 Contribution
+If you would like to contribute, please fork the repository and submit a pull request.
