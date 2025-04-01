@@ -14,7 +14,7 @@ Below is the conceptual data model (CDM) for the system:
 | 🆔 Column Name            | 🗄️ Data Type  | 📌 Description                       |
 |------------------------|-----------|-----------------------------------|
 | `employee_id`         | INT (PK)  | Unique identifier for employees  |
-| `factory_name`        | VARCHAR   | Factory name of the employee     |
+| `employee_name`       | VARCHAR   | Factory name of the employee     |
 | `employee_avatar`     | VARCHAR   | Profile picture of the employee  |
 | `employee_email`      | VARCHAR   | Email address                    |
 | `employee_position`   | VARCHAR   | Job position                     |
