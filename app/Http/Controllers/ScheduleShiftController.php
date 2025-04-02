@@ -58,6 +58,11 @@ class ScheduleShiftController extends Controller
      */
     public function store(Request $request)
     {
+        // return response()->json([
+        //     'success' => true,
+        //     'message' => 'Ca làm việc mới được tạo!',
+        //     'data' => $request->all()
+        // ]);
         try {
             // Bắt đầu transaction
             DB::beginTransaction();

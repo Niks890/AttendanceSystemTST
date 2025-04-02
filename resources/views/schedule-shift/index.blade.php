@@ -439,7 +439,8 @@
                         let timeIn = $('#time_in').val();
                         let timeOut = $('#time_out').val();
                         let KPI = $('#KPI').val();
-                        console.log(selectedEmpIds);
+                        let workday = $('.workday').val();
+                        // console.log(selectedEmpIds);
 
 
                         $.ajax({
@@ -451,6 +452,7 @@
                                 time_out: timeOut,
                                 KPI: KPI,
                                 employee_ids: selectedEmpIds,
+                                workday: workday,
                                 _token: '{{ csrf_token() }}'
                             },
                             success: function(response) {
@@ -500,8 +502,8 @@
                     success: function(response) {
                         if (response.status === 200) {
                             let listEmp = @json($employeeList);
-                            console.log(listEmp);
-                            console.log(response.data);
+                            // console.log(listEmp);
+                            // console.log(response.data);
                             // alert(response.message);
 
                             let employeeHasShift = response.data.map(emp => emp.id.toString());
@@ -528,12 +530,12 @@
                                 e.preventDefault();
                                 let empList = employeeAddListHasNoShift;
                                 let employeeAddList = `
-                            <tr>
-                                <th><input type="checkbox" id="selectAll"></th>
-                                <th>STT</th>
-                                <th>ID</th>
-                                <th>Tên</th>
-                            </tr>`;
+                                        <tr>
+                                            <th><input type="checkbox" id="selectAll"></th>
+                                            <th>STT</th>
+                                            <th>ID</th>
+                                            <th>Tên</th>
+                                        </tr>`;
 
                                 empList.forEach(function(employee) {
                                     let empIds = employee.emp_ids ? employee
@@ -593,6 +595,7 @@
                                     $('#addnew').modal('show');
 
                                     $('#saveShift').off('click').on('click',
+
                                         function() {
                                             $.ajax({
                                                 url: '{{ route('schedule-shift.store') }}',
@@ -610,22 +613,26 @@
                                                     KPI: $('#KPI')
                                                         .val(),
                                                     workday: $(
-                                                        '.workday'
+                                                        '#workday'
                                                     ).val(),
                                                     employee_ids: selectedEmpIds,
                                                     _token: '{{ csrf_token() }}'
                                                 },
                                                 success: function(
                                                     response) {
-                                                    alert(
-                                                        'Ca làm việc đã được lưu thành công!'
+                                                    // alert(
+                                                    //     'Ca làm việc đã được lưu thành công!'
+                                                    // );
+                                                    // $('#addnew')
+                                                    //     .modal(
+                                                    //         'hide'
+                                                    //     );
+                                                    // location
+                                                    //     .reload();
+                                                    console.log(
+                                                        response
+                                                        .data
                                                     );
-                                                    $('#addnew')
-                                                        .modal(
-                                                            'hide'
-                                                        );
-                                                    location
-                                                        .reload();
                                                 },
                                                 error: function(
                                                     xhr) {
