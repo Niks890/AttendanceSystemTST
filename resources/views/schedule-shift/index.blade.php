@@ -9,13 +9,6 @@
             <i class="fas fa-check p-2 bg-success text-white rounded-circle pe-2 mx-2"></i>{{ Session::get('success') }}
         </div>
     @endif
-    {{-- @if (Session::has('success'))
-        <div class='alert alert-success alert-dismissible'>
-            <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>
-            <h4><i class='icon fa fa-check'></i> Success!</h4>
-            {{ Session::has('success') }}
-        </div>
-    @endif --}}
 
     @if (Session::has('error'))
         <div class="shadow-lg p-2 move-from-top js-div-dissappear" style="width: 18rem; display:flex; text-align:center">
@@ -281,7 +274,7 @@
     <link rel="stylesheet" href="{{ asset('css/message.css') }}" />
 @endsection
 
-@section('js')
+{{-- @section('js')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     @if (Session::has('success') || Session::has('error'))
         <script src="{{ asset('js/message.js') }}"></script>
@@ -654,6 +647,248 @@
                         }
                     },
                     error: function(xhr) {
+                        console.error(xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script>
+@endsection --}}
+
+
+@section('js')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    @if (Session::has('success') || Session::has('error'))
+        <script src="{{ asset('js/message.js') }}"></script>
+    @endif
+
+    <script>
+        $(document).ready(function() {
+            let selectedEmpIds = [];
+            let selectedEmpNames = [];
+            let availableEmployeeList = [];
+            let employeeHasShift = [];
+
+            // Modal xóa lịch
+            $('.off-modal').click(() => $('#scheduleDelete').modal('hide'));
+
+            $('.btn-delete').click(function(e) {
+                e.preventDefault();
+                $('#scheduleDelete').modal('show');
+                const scheduleId = $(this).data('id');
+                const scheduleName = $(this).data('name');
+                $('#schedule-name-delete').text(scheduleName);
+                const url = '{{ route('schedule-shift.destroy', ':id') }}'.replace(':id', scheduleId);
+                $('#delete-form').attr('action', url);
+            });
+
+            // Xem danh sách nhân viên của lịch
+            $('.show-emp-list').click(function(e) {
+                e.preventDefault();
+                const empIds = $(this).data('id');
+                const scheduleId = $(this).closest('tr').find('td').eq(0).text();
+
+                $.post('/api/schedule-shift', {
+                    listId: empIds,
+                    schedule_id: scheduleId
+                }, function(response) {
+                    let html = '';
+                    if (response.data?.length > 0) {
+                        response.data.forEach((employee, index) => {
+                            html +=
+                                `<tr><td>${index + 1}</td><td>${employee.name}</td><td>${employee.position}</td><td>${employee.department_name}</td></tr>`;
+                        });
+                        $('#employeeListModalLabel').html(
+                            `Danh sách nhân viên của Ca làm việc ${scheduleId}<br>Tổng: ${response.data.length}`
+                        );
+                    } else {
+                        html =
+                            `<tr><td colspan="4" class="text-center"><strong>Không có nhân viên nào!</strong></td></tr>`;
+                    }
+                    $('#employeeList').html(html);
+                    $('#employeeListModal').modal('show');
+                }).fail(xhr => {
+                    console.error(xhr);
+                    alert('Lỗi: ' + xhr.responseText);
+                });
+            });
+
+            // Mở modal thêm lịch và reset các input
+            $('.btn-add-schedule').click(e => {
+                e.preventDefault();
+                $('#addnew').modal('show');
+                $('#name, #time_in, #time_out, #KPI').val('');
+                $('.workday').val('');
+            });
+
+            // Khi chọn ngày làm việc
+            $(document).on('change', '.workday', function() {
+                if ($(this).val()) {
+                    $('.time-in-out').removeClass('d-none');
+                } else {
+                    $('.time-in-out').addClass('d-none');
+                }
+                $('.time-in-out').trigger('change');
+            });
+
+            // Kiểm tra trùng lịch khi chọn giờ
+            $(document).on('change', '.time-in-out', function() {
+                const workday = $('.workday').val();
+                const timeIn = $('#time_in').val();
+                const timeOut = $('#time_out').val();
+
+                if (!workday || !timeIn || !timeOut) return;
+
+                $.post('/api/check-shift', {
+                    workday,
+                    time_in: timeIn,
+                    time_out: timeOut,
+                    _token: '{{ csrf_token() }}'
+                }, function(response) {
+                    if (response.status === 200) {
+                        const listEmp = @json($employeeList);
+                        employeeHasShift = response.data.map(emp => emp.id.toString());
+
+                        const idsArray = (listEmp[0]?.emp_ids || "").split(',');
+                        const namesArray = (listEmp[0]?.emp_names || "").split(',');
+
+                        const filteredIds = [];
+                        const filteredNames = [];
+
+                        idsArray.forEach((id, index) => {
+                            if (!employeeHasShift.includes(id)) {
+                                filteredIds.push(id);
+                                filteredNames.push(namesArray[index]);
+                            }
+                        });
+
+                        availableEmployeeList = [{
+                            emp_ids: filteredIds.join(','),
+                            emp_names: filteredNames.join(',')
+                        }];
+                    } else {
+                        $('.error-message').text(response.message);
+                    }
+                }).fail(xhr => {
+                    console.error(xhr.responseText);
+                });
+            });
+            // Show danh sách nhân viên
+            $(document).on('click', '.show-add-emp-list', function(e) {
+                e.preventDefault();
+
+                if (!availableEmployeeList.length || availableEmployeeList[0].emp_ids === '') {
+                    alert('Vui lòng chọn ngày và giờ hợp lệ trước!');
+                    return;
+                }
+
+                const filteredIds = availableEmployeeList[0].emp_ids.split(',');
+                const filteredNames = availableEmployeeList[0].emp_names.split(',');
+
+                if (filteredIds.length === 0) {
+                    alert('Tất cả nhân viên đã bị trùng khung giờ này!');
+                    return;
+                }
+
+                let html = `
+                    <tr>
+                        <th><input type="checkbox" id="selectAll"></th>
+                        <th>STT</th>
+                        <th>ID</th>
+                        <th>Tên</th>
+                    </tr>`;
+
+                filteredIds.forEach((id, index) => {
+                    html += `<tr>
+                        <td><input type="checkbox" class="emp-checkbox" value="${id}"></td>
+                        <td>${index + 1}</td>
+                        <td>${id}</td>
+                        <td>${filteredNames[index]}</td>
+                    </tr>`;
+                });
+
+                $('#employeeAddList').html(html);
+                $('#employeeAddListModal').modal('show');
+
+                $('#selectAll').off('click').on('click', function() {
+                    $('.emp-checkbox').prop('checked', this.checked);
+                });
+
+                $(document).off('change', '.emp-checkbox').on('change', '.emp-checkbox', function() {
+                    $('#selectAll').prop('checked', $('.emp-checkbox:checked').length === $(
+                        '.emp-checkbox').length);
+                });
+
+                $('#addShift').off('click').on('click', function() {
+                    selectedEmpIds = [];
+                    selectedEmpNames = [];
+
+                    $('.emp-checkbox:checked').each(function() {
+                        selectedEmpIds.push($(this).val());
+                        selectedEmpNames.push($(this).closest('tr').find('td').eq(3)
+                            .text());
+                    });
+
+                    $('#selectedEmployeeCount').text(
+                        `Đã chọn ${selectedEmpNames.length} nhân viên`);
+                    const dropdownList = selectedEmpNames.map((name, i) =>
+                        `<a class="dropdown-item">${i + 1}. ${name}</a>`
+                    ).join('');
+                    $('#selectedEmployeeDropdown').html(dropdownList);
+
+                    $('#employeeAddListModal').modal('hide');
+                    $('#addnew').modal('show');
+                });
+            });
+
+            // Lưu ca làm việc
+            $('#saveShift').click(function() {
+                const shiftName = $('#name').val();
+                const timeIn = $('#time_in').val();
+                const timeOut = $('#time_out').val();
+                const KPI = $('#KPI').val();
+                const workday = $('.workday').val();
+
+                if (!shiftName || !timeIn || !timeOut || !workday) {
+                    alert('Vui lòng điền đầy đủ thông tin!');
+                    return;
+                }
+
+                // if (timeIn >= timeOut) {
+                //     alert('Giờ vào phải trước giờ ra!');
+                //     return;
+                // }
+
+                if (selectedEmpIds.length === 0) {
+                    alert('Vui lòng chọn nhân viên trước khi lưu!');
+                    return;
+                }
+
+                const overlap = selectedEmpIds.some(id => employeeHasShift.includes(id));
+                if (overlap) {
+                    alert('Danh sách có nhân viên đã bị trùng ca! Vui lòng chọn lại.');
+                    return;
+                }
+
+                $.ajax({
+                    url: '{{ route('schedule-shift.store') }}',
+                    method: 'POST',
+                    data: {
+                        shift_name: shiftName,
+                        time_in: timeIn,
+                        time_out: timeOut,
+                        KPI: KPI,
+                        employee_ids: selectedEmpIds,
+                        workday: workday,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        alert('Ca làm việc đã được lưu thành công!');
+                        $('#addnew').modal('hide');
+                        location.reload();
+                    },
+                    error: function(xhr) {
+                        alert('Đã xảy ra lỗi khi lưu ca làm việc!');
                         console.error(xhr.responseText);
                     }
                 });
