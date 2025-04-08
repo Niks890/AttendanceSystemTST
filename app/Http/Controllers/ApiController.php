@@ -76,7 +76,7 @@ class ApiController extends Controller
             ->select('employees.id', 'employees.name', 'detail_schedules.workday', 'schedules.time_in', 'schedules.time_out')
             ->get();
         if ($employees->count() == 0) {
-            return $this->apiStatus($employees, 200, count($employees));
+            return $this->apiStatus($employees, 200, count($employees), message: 'lịch hợp lệ');
         } else {
             return $this->apiStatus($employees, 400, count($employees), message: 'Lịch đã bị chiếm dụng.');
         }

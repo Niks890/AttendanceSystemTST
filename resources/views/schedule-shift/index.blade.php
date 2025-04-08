@@ -655,7 +655,6 @@
     </script>
 @endsection --}}
 
-
 @section('js')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     @if (Session::has('success') || Session::has('error'))
@@ -664,6 +663,8 @@
 
     <script>
         $(document).ready(function() {
+            const employeeList = @json($employeeList);
+            // console.log(employeeList);
             let selectedEmpIds = [];
             let selectedEmpNames = [];
             let availableEmployeeList = [];
@@ -671,7 +672,7 @@
 
             // Modal xóa lịch
             $('.off-modal').click(() => $('#scheduleDelete').modal('hide'));
-
+            // Xử lý xoá lịch
             $('.btn-delete').click(function(e) {
                 e.preventDefault();
                 $('#scheduleDelete').modal('show');
@@ -739,15 +740,21 @@
 
                 if (!workday || !timeIn || !timeOut) return;
 
+                // console.log(workday, timeIn, timeOut);
+
                 $.post('/api/check-shift', {
                     workday,
                     time_in: timeIn,
                     time_out: timeOut,
                     _token: '{{ csrf_token() }}'
                 }, function(response) {
-                    if (response.status === 200) {
-                        const listEmp = @json($employeeList);
+                    // console.log("Dữ liệu từ API /api/check-shift:", response);
+                    if (response.status_code === 200) {
+                        // console.log(response.message);
+                        const listEmp = employeeList;
+                        // console.log("DS nhân viên: ", listEmp);
                         employeeHasShift = response.data.map(emp => emp.id.toString());
+                        // console.log("DS nhân viên: ", employeeHasShift);
 
                         const idsArray = (listEmp[0]?.emp_ids || "").split(',');
                         const namesArray = (listEmp[0]?.emp_names || "").split(',');
@@ -776,6 +783,7 @@
             // Show danh sách nhân viên
             $(document).on('click', '.show-add-emp-list', function(e) {
                 e.preventDefault();
+                console.log(availableEmployeeList);
 
                 if (!availableEmployeeList.length || availableEmployeeList[0].emp_ids === '') {
                     alert('Vui lòng chọn ngày và giờ hợp lệ trước!');
