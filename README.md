@@ -87,7 +87,7 @@ Below is the conceptual data model (CDM) for the system:
 ## 🛠️ Technologies Used
 - **Backend:** Laravel 10, PHP 8
 - **Database:** MySQL
-- **Frontend:** JQuery, Bootstrap
+- **Frontend:** jQuery, Bootstrap
 - **Authorization:** Laravel Gate
 - **ORM:** Eloquent
 - **Communication Protocol:** TCP Socket for biometric device data transfer
