@@ -15,6 +15,7 @@ class AttendanceProduct extends Model
         'KPI_done',
         'factory_id',
         'employee_id',
+        'schedule_id'
     ];
 
     public function employee()

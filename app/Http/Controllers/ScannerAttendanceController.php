@@ -57,7 +57,8 @@ class ScannerAttendanceController extends Controller
                 'KPI_done' => $entry['product_count_done'],
                 'factory_id' => $entry['factory_id'],
                 'employee_id' => $entry['employee_id'],
-                'status' => $rating
+                'status' => $rating,
+                'schedule_id' => $entry['schedule_id']
             ]);
 
             $employees[] = [
@@ -97,8 +98,8 @@ class ScannerAttendanceController extends Controller
                 'KPI_done' => $entry['product_count_done'],
                 'factory_id' => $entry['factory_id'],
                 'employee_id' => $entry['employee_id'],
-                'status' => $rating
-
+                'status' => $rating,
+                'schedule_id' => $entry['schedule_id']
             ]);
             $employees[] = [
                 'employee_id' => $entry['employee_id'],

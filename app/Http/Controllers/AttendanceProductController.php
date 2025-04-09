@@ -27,8 +27,17 @@ class AttendanceProductController extends Controller
         )
             ->join('factories', 'factories.id', '=', 'attendance_products.factory_id')
             ->join('employees', 'employees.id', '=', 'attendance_products.employee_id')
+<<<<<<< HEAD
             ->join('detail_schedules', 'detail_schedules.employee_id', '=', 'employees.id')
             ->join('schedules', 'schedules.id', '=', 'detail_schedules.schedule_id')
+=======
+            ->join('detail_schedules', function ($join) {
+                $join->on('detail_schedules.employee_id', '=', 'employees.id')
+                    ->whereDate('detail_schedules.workday', '=', DB::raw('DATE(attendance_products.attendance_product_time)'));
+            })
+            ->join('schedules', 'schedules.id', '=', 'detail_schedules.schedule_id')
+            ->whereColumn('schedules.id', 'attendance_products.schedule_id') // <-- dòng này quan trọng
+>>>>>>> c9bd11271219e5d81733467a4a9f09ba4f8c462f
             ->distinct();
 
         if ($request->has('filter_date')) {

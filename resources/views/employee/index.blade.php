@@ -203,7 +203,7 @@
                                 <select name="position" id="employee-edit-position" class="form-control" required>
                                     <option value="Nhân viên xưởng">Nhân viên xưởng</option>
                                     <option value="Nhân viên quản lý">Nhân viên quản lý</option>
-                                    <option value="Nhân viên quản lý">Nhân viên sản xuất</option>
+                                    <option value="Nhân viên sản xuất">Nhân viên sản xuất</option>
                                 </select>
                             </div>
                         </div>
