@@ -55,7 +55,7 @@
                                         <td>{{ $model->schedule_name }}</td>
                                         <td>{{ $model->KPI }}</td>
                                         <td class="text-center">{{ $model->KPI_done }}</td>
-                                        <td>{!! $model->status == 0
+                                        <td>{!! $model->KPI_done < $model->KPI
                                             ? '<span class="text-danger">Chưa hoàn thành</span>'
                                             : '<span class="text-success">Hoàn thành</span>' !!}</td>
                                         <td>{{ $model->factory_name }}</td>

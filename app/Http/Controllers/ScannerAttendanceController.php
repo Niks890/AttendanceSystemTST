@@ -90,7 +90,7 @@ class ScannerAttendanceController extends Controller
             $KPI = DetailSchedule::where('schedule_id', $entry['schedule_id'])
                 ->where('employee_id', $entry['employee_id'])
                 ->pluck('KPI')->first();
-            $KPI > $entry['product_count_done'] ? $rating = false : $rating = true;
+            $rating = $KPI > $entry['product_count_done'] ? false : true;
             // return response()->json($KPI);
             AttendanceProduct::create([
                 'attendance_product_time' => $entry['time'],
