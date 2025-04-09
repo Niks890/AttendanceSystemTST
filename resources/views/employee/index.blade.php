@@ -89,6 +89,9 @@
                     @endforeach
                 </table>
             </div>
+
+            <div class="d-flex justify-content-center"> {{ $data->links() }}</div>
+
         </div>
     </div>
     <!-- /.container-fluid -->
@@ -140,7 +143,7 @@
                         enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
-                        <div>
+                        <div class="d-none">
                             <label class="form-label">Mã nhân viên:</label>
                             <input type="text" name="id" id="employee-edit-id" class="form-control"
                                 placeholder="Nhập họ tên" required readonly>

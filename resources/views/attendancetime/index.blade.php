@@ -79,7 +79,7 @@
                             </tbody>
                         </table>
                     </div>
-
+                    <div class="d-flex justify-content-center"> {{ $attendances->links() }}</div>
                 </div>
             </div>
         </div>

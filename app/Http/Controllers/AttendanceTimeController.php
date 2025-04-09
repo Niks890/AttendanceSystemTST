@@ -33,9 +33,9 @@ class AttendanceTimeController extends Controller
             );
         if ($request->has('filter_date')) {
             $query = $request->input('filter_date');
-            $attendances = $attendances->where('ds.workday', $query)->get();
+            $attendances = $attendances->where('ds.workday', $query)->paginate(3);
         } else {
-            $attendances = $attendances->where('ds.workday', now()->format('Y-m-d'))->get();
+            $attendances = $attendances->where('ds.workday', now()->format('Y-m-d'))->paginate(3);
         }
         return view('attendancetime.index', compact('attendances'));
     }

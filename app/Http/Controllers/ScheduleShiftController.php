@@ -28,7 +28,7 @@ class ScheduleShiftController extends Controller
             ->join('employees', 'detail_schedules.employee_id', '=', 'employees.id')
             ->join('schedules', 'detail_schedules.schedule_id', '=', 'schedules.id')
             ->groupBy('schedules.id', 'detail_schedules.workday')
-            ->get();
+            ->paginate(3);
 
 
         $employeeList = DB::table('employees')
@@ -162,7 +162,7 @@ class ScheduleShiftController extends Controller
             ->groupBy('schedules.id', 'detail_schedules.workday')
             ->where('schedules.id', 'like', '%' . $query . '%')
             ->orWhere('schedules.name', 'like', '%' . $query . '%')
-            ->get();
+            ->paginate(3);
 
 
         $employeeList = DB::table('employees')

@@ -28,7 +28,7 @@ class EmployeeController extends Controller
                 'e.position',
             )
             ->groupBy('e.id', 'e.avatar', 'e.name', 'e.address', 'e.phone', 'e.gender', 'e.position')
-            ->get();
+            ->paginate(3);
         // dd($data);
 
         $departments = Department::all();
@@ -225,7 +225,9 @@ class EmployeeController extends Controller
     public function search(Request $request)
     {
         $query = $request->input('query');
-        $data = Employee::where('name', 'like', '%' . $query . '%')->get();
+        $data = Employee::where('name', 'like', '%' . $query . '%')
+            ->orWhere('id', $query)
+            ->paginate(3);
         $departments = Department::all();
 
         return view('employee.index', compact('data', 'query', 'departments'));

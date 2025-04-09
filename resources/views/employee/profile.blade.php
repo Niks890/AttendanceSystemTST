@@ -85,11 +85,11 @@
 @endsection
 
 @section('css')
-    <link rel="stylesheet" href="{{ asset('assets/css/message.css') }}" />
+    <link rel="stylesheet" href="{{ asset('css/message.css') }}" />
 @endsection
 
 @section('js')
     @if (Session::has('success'))
-        <script src="{{ asset('assets/js/message.js') }}"></script>
+        <script src="{{ asset('js/message.js') }}"></script>
     @endif
 @endsection

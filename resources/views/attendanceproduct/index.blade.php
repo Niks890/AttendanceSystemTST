@@ -47,22 +47,25 @@
                             </thead>
                             <tbody>
                                 @foreach ($attendanceData as $model)
-                                <tr>
-                                    <td>{{ $model->date_only . ' ' . $model->time_only }}</td>
-                                    <td class="text-center">{{ $model->employee_id }}</td>
-                                    <td>{{ $model->position }}</td>
-                                    <td>{{ $model->employee_name }}</td>
-                                    <td>{{ $model->schedule_name }}</td>
-                                    <td>{{ $model->KPI }}</td>
-                                    <td class="text-center">{{ $model->KPI_done }}</td>
-                                    <td>{!! $model->status == 0 ? '<span class="text-danger">Chưa hoàn thành</span>' : '<span class="text-success">Hoàn thành</span>' !!}</td>
-                                    <td>{{ $model->factory_name }}</td>
-                                    <td>Xem chi tiết</td>
-                                </tr>
+                                    <tr>
+                                        <td>{{ $model->date_only . ' ' . $model->time_only }}</td>
+                                        <td class="text-center">{{ $model->employee_id }}</td>
+                                        <td>{{ $model->position }}</td>
+                                        <td>{{ $model->employee_name }}</td>
+                                        <td>{{ $model->schedule_name }}</td>
+                                        <td>{{ $model->KPI }}</td>
+                                        <td class="text-center">{{ $model->KPI_done }}</td>
+                                        <td>{!! $model->status == 0
+                                            ? '<span class="text-danger">Chưa hoàn thành</span>'
+                                            : '<span class="text-success">Hoàn thành</span>' !!}</td>
+                                        <td>{{ $model->factory_name }}</td>
+                                        <td>Xem chi tiết</td>
+                                    </tr>
                                 @endforeach
                             </tbody>
                         </table>
                     </div>
+                    <div class="d-flex justify-content-center"> {{ $attendanceData->links() }}</div>
 
                 </div>
             </div>

@@ -32,9 +32,9 @@ class AttendanceProductController extends Controller
 
         if ($request->has('filter_date')) {
             $query = $request->input('filter_date');
-            $attendanceData = $attendanceData->whereRaw("DATE(attendance_products.attendance_product_time) = ?", [$query])->get();
+            $attendanceData = $attendanceData->whereRaw("DATE(attendance_products.attendance_product_time) = ?", [$query])->paginate(3);
         } else {
-            $attendanceData = $attendanceData->whereRaw("DATE(attendance_products.attendance_product_time) = ?", [now()->format('Y-m-d')])->get();
+            $attendanceData = $attendanceData->whereRaw("DATE(attendance_products.attendance_product_time) = ?", [now()->format('Y-m-d')])->paginate(3);
         }
 
         return view('attendanceproduct.index', compact('attendanceData'));
