@@ -28,7 +28,8 @@ class AttendanceProductController extends Controller
             ->join('factories', 'factories.id', '=', 'attendance_products.factory_id')
             ->join('employees', 'employees.id', '=', 'attendance_products.employee_id')
             ->join('detail_schedules', 'detail_schedules.employee_id', '=', 'employees.id')
-            ->join('schedules', 'schedules.id', '=', 'detail_schedules.schedule_id');
+            ->join('schedules', 'schedules.id', '=', 'detail_schedules.schedule_id')
+            ->distinct();
 
         if ($request->has('filter_date')) {
             $query = $request->input('filter_date');
