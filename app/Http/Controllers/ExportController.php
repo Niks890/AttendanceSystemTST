@@ -197,11 +197,11 @@ class ExportController extends Controller
             'attendance_products.status',
             'factories.name as factory_name'
         )
-        ->join('factories', 'factories.id', '=', 'attendance_products.factory_id')
-        ->join('employees', 'employees.id', '=', 'attendance_products.employee_id')
-        ->join('detail_schedules', 'detail_schedules.employee_id', '=', 'employees.id')
-        ->join('schedules', 'schedules.id', '=', 'detail_schedules.schedule_id')
-        ->get();
+            ->join('factories', 'factories.id', '=', 'attendance_products.factory_id')
+            ->join('employees', 'employees.id', '=', 'attendance_products.employee_id')
+            ->join('detail_schedules', 'detail_schedules.employee_id', '=', 'employees.id')
+            ->join('schedules', 'schedules.id', '=', 'detail_schedules.schedule_id')
+            ->get();
 
         foreach ($attendanceData as $attendance) {
             $row = WriterEntityFactory::createRowFromArray([
@@ -212,7 +212,7 @@ class ExportController extends Controller
                 $attendance->schedule_name,
                 $attendance->KPI,
                 $attendance->KPI_done,
-                $attendance->status == 0 ? 'Chưa hoàn thành' : 'Hoàn thành',
+                $attendance->KPI > $attendance->KPI_done ? 'Chưa hoàn thành' : 'Hoàn thành',
                 $attendance->factory_name,
             ]);
             $writer->addRow($row);
