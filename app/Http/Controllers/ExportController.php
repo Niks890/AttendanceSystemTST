@@ -201,6 +201,8 @@ class ExportController extends Controller
             ->join('employees', 'employees.id', '=', 'attendance_products.employee_id')
             ->join('detail_schedules', 'detail_schedules.employee_id', '=', 'employees.id')
             ->join('schedules', 'schedules.id', '=', 'detail_schedules.schedule_id')
+            ->whereDate('attendance_products.attendance_product_time', $request->input('date'))
+            ->whereColumn('schedules.id', 'attendance_products.schedule_id')
             ->get();
 
         foreach ($attendanceData as $attendance) {
