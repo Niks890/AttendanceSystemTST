@@ -21,7 +21,16 @@ class AttendanceTimeController extends Controller
             ->join('employees as e', 'ds.employee_id', '=', 'e.id')
             ->join('attendances as a', 'e.id', '=', 'a.employee_id')
             ->whereColumn('ds.workday', 'a.attendance_date')
-            ->select('ds.workday', 'e.id as emp_id', 'e.name', 'a.attendance_time', 's.time_in', 's.time_out', 's.name as sche_name');
+            ->whereBetween('a.attendance_time', [DB::raw('s.time_in'), DB::raw('s.time_out')])
+            ->select(
+                'ds.workday',
+                'e.id as emp_id',
+                'e.name',
+                'a.attendance_time',
+                's.time_in',
+                's.time_out',
+                's.name as sche_name'
+            );
         if ($request->has('filter_date')) {
             $query = $request->input('filter_date');
             $attendances = $attendances->where('ds.workday', $query)->get();
